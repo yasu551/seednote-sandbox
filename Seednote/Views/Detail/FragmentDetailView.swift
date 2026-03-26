@@ -5,6 +5,7 @@ struct FragmentDetailView: View {
     @StateObject private var viewModel: FragmentDetailViewModel
     @State private var showEditor = false
     @State private var showDeleteConfirm = false
+    @State private var selectedTemplate: TemplateType?
 
     init(fragment: Fragment) {
         _viewModel = StateObject(
@@ -61,12 +62,19 @@ struct FragmentDetailView: View {
                     }
                 }
 
+                ReuseTemplateSectionView(templates: viewModel.reuseTemplates) { template in
+                    selectedTemplate = template
+                }
+
                 RelatedFragmentsSectionView(relatedFragments: viewModel.relatedFragments)
             }
             .padding(Spacing.md)
         }
         .navigationTitle(viewModel.fragment.title.isEmpty ? "メモ" : viewModel.fragment.title)
         .navigationBarTitleDisplayMode(.inline)
+        .navigationDestination(item: $selectedTemplate) { template in
+            GeneratedDraftView(fragment: viewModel.fragment, template: template)
+        }
         .overlay(
             LoadingOverlayView(isShowing: $viewModel.isLoading, message: "AIで整理中...")
         )

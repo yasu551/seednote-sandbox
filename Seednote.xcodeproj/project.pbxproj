@@ -32,6 +32,7 @@
 		58BAD88B015C793FDDB208BC /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A70A3E21333F14C52826D2D /* HomeViewModel.swift */; };
 		67D4D28CB06DEDDFEE00C6BA /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D98B16936C77382B0825929 /* EmptyStateView.swift */; };
 		68A10C9101ED545CF9768340 /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB1F05504CDFCFC27484BA5 /* SubscriptionService.swift */; };
+		6D46C2E6F3AAC473376F2949 /* ReuseTemplateSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8E0541093A9F3E11D2E25E4 /* ReuseTemplateSectionView.swift */; };
 		6E93F3A048C56B90FF4E02F4 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062EB268BFF4DCCCA88B0839 /* FlowLayout.swift */; };
 		71562A9C8B6A9FAD004041EA /* SwiftDataFragmentRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B577EAB19A02FDBB4C4D434 /* SwiftDataFragmentRepository.swift */; };
 		720EF9F786609A9599A99218 /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E3433C8398ADB353CF3B60 /* SearchBarView.swift */; };
@@ -125,6 +126,7 @@
 		BB61967CD9B265903F01D57C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C814C5D8686A7655D47FD7F6 /* GeneratedDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedDraft.swift; sourceTree = "<group>"; };
 		C87E0AAB23E7A044B6B095EF /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		C8E0541093A9F3E11D2E25E4 /* ReuseTemplateSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReuseTemplateSectionView.swift; sourceTree = "<group>"; };
 		D1DB73E004B31F7FB3DD4583 /* SubscriptionServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionServiceProtocol.swift; sourceTree = "<group>"; };
 		D6FD6748A8A86806222C311C /* FragmentRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentRepositoryProtocol.swift; sourceTree = "<group>"; };
 		DB4A7751ECEBCAD7D74BF19D /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
@@ -312,6 +314,7 @@
 				62D88BAEA1AC845504406970 /* FragmentDetailView.swift */,
 				EB370434D25012D27A9B976E /* FragmentDetailViewModel.swift */,
 				02EFBC4AD0A12E9E6E46734F /* RelatedFragmentsSectionView.swift */,
+				C8E0541093A9F3E11D2E25E4 /* ReuseTemplateSectionView.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -492,6 +495,7 @@
 				09B09B520A5C7A3790AAB442 /* RelatedFragmentService.swift in Sources */,
 				4258C95B7C4237670CF890A4 /* RelatedFragmentServiceProtocol.swift in Sources */,
 				7EC4FD221EB0082190B5A1C6 /* RelatedFragmentsSectionView.swift in Sources */,
+				6D46C2E6F3AAC473376F2949 /* ReuseTemplateSectionView.swift in Sources */,
 				84F73FF9E08081032099DCFD /* RootView.swift in Sources */,
 				720EF9F786609A9599A99218 /* SearchBarView.swift in Sources */,
 				3AA3D81D023E09686E816776 /* SecondaryButton.swift in Sources */,

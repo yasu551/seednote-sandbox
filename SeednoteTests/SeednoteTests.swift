@@ -231,6 +231,24 @@ struct SeednoteTests {
         #expect(viewModel.relatedFragments.map(\.fragment.id) == [candidate.id])
     }
 
+    @MainActor
+    @Test func FragmentDetailViewModelは再利用テンプレートを表示順で返せる() {
+        let fragment = Fragment(
+            title: "断片",
+            body: "本文"
+        )
+        let viewModel = FragmentDetailViewModel(
+            fragment: fragment,
+            repository: MockFragmentRepository(),
+            aiService: MockAIAnalysisService(),
+            relatedService: RelatedFragmentService(),
+            allFragments: []
+        )
+
+        #expect(viewModel.reuseTemplates == [.essayOutline, .shortStoryCore, .appIdea])
+        #expect(viewModel.reuseTemplates.map(\.displayName) == ["エッセイの骨子", "短編の核", "アプリ案"])
+    }
+
     @Test func RelatedFragmentServiceは自身を除外して関連度順の上位3件を返す() {
         let target = Fragment(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
@@ -481,7 +499,7 @@ struct SeednoteTests {
     @Test func enumのdisplayNameは日本語を返す() {
         #expect(FragmentStatus.unprocessed.displayName == "未整理")
         #expect(FragmentType.question.displayName == "質問")
-        #expect(TemplateType.essayOutline.displayName == "エッセイ骨子")
+        #expect(TemplateType.essayOutline.displayName == "エッセイの骨子")
     }
 }
 

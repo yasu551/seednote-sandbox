@@ -6,6 +6,8 @@ class FragmentDetailViewModel: ObservableObject {
     @Published var fragment: Fragment
     @Published var relatedFragments: [RelatedFragment] = []
     @Published var isLoading: Bool = false
+
+    let reuseTemplates: [TemplateType] = [.essayOutline, .shortStoryCore, .appIdea]
     
     private let repository: FragmentRepositoryProtocol
     private let aiService: AIAnalysisServiceProtocol

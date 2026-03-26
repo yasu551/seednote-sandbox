@@ -8,7 +8,7 @@ enum TemplateType: String, CaseIterable {
     var displayName: String {
         switch self {
         case .essayOutline:
-            return "エッセイ骨子"
+            return "エッセイの骨子"
         case .shortStoryCore:
             return "短編の核"
         case .appIdea:

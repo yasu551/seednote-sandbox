@@ -27,8 +27,6 @@ class GeneratedDraftViewModel: ObservableObject {
             fragmentID: fragment.id,
             templateRawValue: template.rawValue
         )
-        
-        generateDraft()
     }
     
     func generateDraft() {
