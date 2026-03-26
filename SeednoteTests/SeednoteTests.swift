@@ -200,6 +200,96 @@ struct SeednoteTests {
         #expect(viewModel.isLoading == false)
     }
 
+    @MainActor
+    @Test func FragmentDetailViewModelは候補断片から関連断片を読み込める() {
+        let fragment = Fragment(
+            id: UUID(uuidString: "10000000-0000-0000-0000-000000000001")!,
+            title: "対象",
+            body: "思考整理と画面設計を進めたい",
+            typeRawValue: FragmentType.idea.rawValue,
+            tags: ["UI", "設計"]
+        )
+        let candidate = Fragment(
+            id: UUID(uuidString: "10000000-0000-0000-0000-000000000002")!,
+            title: "候補",
+            body: "画面設計の方向性を整理したい",
+            updatedAt: Date(timeIntervalSince1970: 200),
+            typeRawValue: FragmentType.idea.rawValue,
+            tags: ["UI"]
+        )
+        let repository = MockFragmentRepository()
+        repository.fetchAllResult = [fragment, candidate]
+
+        let viewModel = FragmentDetailViewModel(
+            fragment: fragment,
+            repository: repository,
+            aiService: MockAIAnalysisService(),
+            relatedService: RelatedFragmentService(),
+            allFragments: []
+        )
+
+        #expect(viewModel.relatedFragments.map(\.fragment.id) == [candidate.id])
+    }
+
+    @Test func RelatedFragmentServiceは自身を除外して関連度順の上位3件を返す() {
+        let target = Fragment(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
+            title: "対象",
+            body: "思考整理と画面設計を進めたい",
+            updatedAt: Date(timeIntervalSince1970: 100),
+            typeRawValue: FragmentType.idea.rawValue,
+            tags: ["UI", "設計"]
+        )
+        let topByTagAndType = Fragment(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
+            title: "最上位候補",
+            body: "画面設計と導線整理を見直したい",
+            updatedAt: Date(timeIntervalSince1970: 400),
+            typeRawValue: FragmentType.idea.rawValue,
+            tags: ["UI", "導線"]
+        )
+        let topByBody = Fragment(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
+            title: "本文一致候補",
+            body: "思考整理を丁寧に進めたい",
+            updatedAt: Date(timeIntervalSince1970: 300),
+            tags: ["内省"]
+        )
+        let thirdByType = Fragment(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
+            title: "型一致候補",
+            body: "別の観点から考える",
+            updatedAt: Date(timeIntervalSince1970: 200),
+            typeRawValue: FragmentType.idea.rawValue,
+            tags: ["メモ"]
+        )
+        let lowScore = Fragment(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
+            title: "低関連候補",
+            body: "UIの印象を確認する",
+            updatedAt: Date(timeIntervalSince1970: 500),
+            tags: ["UI"]
+        )
+        let unrelated = Fragment(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
+            title: "無関係候補",
+            body: "海辺を散歩した記録",
+            updatedAt: Date(timeIntervalSince1970: 600),
+            typeRawValue: FragmentType.world.rawValue,
+            tags: ["散歩"]
+        )
+        let service = RelatedFragmentService()
+
+        let related = service.relatedFragments(
+            for: target,
+            from: [target, lowScore, thirdByType, topByBody, topByTagAndType, unrelated]
+        )
+
+        #expect(related.count == 3)
+        #expect(related.contains { $0.fragment.id == target.id } == false)
+        #expect(related.map(\.fragment.id) == [topByTagAndType.id, topByBody.id, thirdByType.id])
+    }
+
     @Test func AIAnalysisServiceは質問断片を質問向けの分析結果として返す() async throws {
         let service: AIAnalysisServiceProtocol = AIAnalysisService()
         let fragmentText = "なぜこの違和感を毎回見逃してしまうのか？"
@@ -406,10 +496,11 @@ private func makeInMemoryModelContainer() throws -> ModelContainer {
 }
 
 private final class MockFragmentRepository: FragmentRepositoryProtocol {
+    var fetchAllResult: [Fragment] = []
     private(set) var deletedFragment: Fragment?
     private(set) var updatedFragment: Fragment?
 
-    func fetchAll() throws -> [Fragment] { [] }
+    func fetchAll() throws -> [Fragment] { fetchAllResult }
     func save(_ fragment: Fragment) throws {}
     func delete(_ fragment: Fragment) throws {
         deletedFragment = fragment

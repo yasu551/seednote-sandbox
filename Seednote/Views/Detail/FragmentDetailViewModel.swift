@@ -11,6 +11,7 @@ class FragmentDetailViewModel: ObservableObject {
     private let aiService: AIAnalysisServiceProtocol
     private let relatedService: RelatedFragmentServiceProtocol
     private let allFragments: [Fragment]
+    private var relatedCandidates: [Fragment]
     
     init(
         fragment: Fragment,
@@ -24,7 +25,8 @@ class FragmentDetailViewModel: ObservableObject {
         self.aiService = aiService
         self.relatedService = relatedService
         self.allFragments = allFragments
-        self.relatedFragments = relatedService.relatedFragments(for: fragment, from: allFragments)
+        self.relatedCandidates = allFragments
+        refreshRelatedFragments()
     }
 
     var displayDateText: String {
@@ -33,6 +35,7 @@ class FragmentDetailViewModel: ObservableObject {
 
     func applyEditedFragment(_ editedFragment: Fragment) {
         fragment = editedFragment
+        refreshRelatedFragments()
     }
     
     func updateStatus(_ status: FragmentStatus) {
@@ -64,6 +67,7 @@ class FragmentDetailViewModel: ObservableObject {
             fragment.typeRawValue = response.type.rawValue
 
             try repository.update(fragment)
+            refreshRelatedFragments()
         } catch {
             print("Failed to reanalyze: \(error)")
         }
@@ -76,6 +80,25 @@ class FragmentDetailViewModel: ObservableObject {
         } catch {
             print("Failed to delete fragment: \(error)")
             return false
+        }
+    }
+
+    private func refreshRelatedFragments() {
+        let candidates = loadRelatedCandidates()
+        relatedCandidates = candidates
+        relatedFragments = relatedService.relatedFragments(for: fragment, from: candidates)
+    }
+
+    private func loadRelatedCandidates() -> [Fragment] {
+        if !allFragments.isEmpty {
+            return allFragments
+        }
+
+        do {
+            return try repository.fetchAll()
+        } catch {
+            print("Failed to fetch related fragment candidates: \(error)")
+            return relatedCandidates
         }
     }
 }

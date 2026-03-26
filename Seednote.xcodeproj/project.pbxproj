@@ -40,6 +40,7 @@
 		7D10D588266FD9FE5EE87780 /* RelatedFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D93586F1BDAC03756B2D2BB /* RelatedFragment.swift */; };
 		7E0736018E1AB49EEC3AE7BD /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17D16DE6E20DF9BB64D24CB5 /* Colors.swift */; };
 		7E0E0CC2B4C46CD8921AC08B /* FragmentRepositoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6FD6748A8A86806222C311C /* FragmentRepositoryProtocol.swift */; };
+		7EC4FD221EB0082190B5A1C6 /* RelatedFragmentsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EFBC4AD0A12E9E6E46734F /* RelatedFragmentsSectionView.swift */; };
 		8374F11AE64AF6CDCE63C8D2 /* FragmentListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 629E124757A3C52E06D0A07D /* FragmentListView.swift */; };
 		84F73FF9E08081032099DCFD /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69741ABD6E49BD14F9088CDA /* RootView.swift */; };
 		8709DD002473138DB82139E8 /* SectionCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 637D0EEA03519FBA6D23CBD3 /* SectionCardView.swift */; };
@@ -77,6 +78,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02EFBC4AD0A12E9E6E46734F /* RelatedFragmentsSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelatedFragmentsSectionView.swift; sourceTree = "<group>"; };
 		062EB268BFF4DCCCA88B0839 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
 		0E9DDDED725C3B6E75CB4601 /* UsageLimitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageLimitService.swift; sourceTree = "<group>"; };
 		17111BA44402BF1BF6C07CF6 /* FragmentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentType.swift; sourceTree = "<group>"; };
@@ -309,6 +311,7 @@
 				E8D8CE793265F0541D4B80EC /* AIAnalysisSectionView.swift */,
 				62D88BAEA1AC845504406970 /* FragmentDetailView.swift */,
 				EB370434D25012D27A9B976E /* FragmentDetailViewModel.swift */,
+				02EFBC4AD0A12E9E6E46734F /* RelatedFragmentsSectionView.swift */,
 			);
 			path = Detail;
 			sourceTree = "<group>";
@@ -488,6 +491,7 @@
 				7D10D588266FD9FE5EE87780 /* RelatedFragment.swift in Sources */,
 				09B09B520A5C7A3790AAB442 /* RelatedFragmentService.swift in Sources */,
 				4258C95B7C4237670CF890A4 /* RelatedFragmentServiceProtocol.swift in Sources */,
+				7EC4FD221EB0082190B5A1C6 /* RelatedFragmentsSectionView.swift in Sources */,
 				84F73FF9E08081032099DCFD /* RootView.swift in Sources */,
 				720EF9F786609A9599A99218 /* SearchBarView.swift in Sources */,
 				3AA3D81D023E09686E816776 /* SecondaryButton.swift in Sources */,

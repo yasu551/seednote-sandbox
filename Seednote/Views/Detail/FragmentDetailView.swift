@@ -60,6 +60,8 @@ struct FragmentDetailView: View {
                         await viewModel.reanalyzeFragment()
                     }
                 }
+
+                RelatedFragmentsSectionView(relatedFragments: viewModel.relatedFragments)
             }
             .padding(Spacing.md)
         }
