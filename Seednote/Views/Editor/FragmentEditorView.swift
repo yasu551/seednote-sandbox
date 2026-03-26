@@ -173,6 +173,11 @@ struct FragmentEditorView: View {
 
         do {
             try await viewModel.analyzeFragment(fragment)
+            if let usageLimitMessage = viewModel.usageLimitMessage {
+                errorMessage = usageLimitMessage
+                viewModel.usageLimitMessage = nil
+                return
+            }
             try repository.update(fragment)
             dismiss()
         } catch {

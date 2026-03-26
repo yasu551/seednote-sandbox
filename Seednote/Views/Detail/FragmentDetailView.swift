@@ -22,6 +22,13 @@ struct FragmentDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Spacing.md) {
+                if let usageLimitMessage = viewModel.usageLimitMessage {
+                    UsageLimitBanner(
+                        title: "利用回数の上限です",
+                        message: usageLimitMessage
+                    )
+                }
+
                 SectionCardView(title: "原文") {
                     VStack(alignment: .leading, spacing: Spacing.md) {
                         if !viewModel.fragment.title.isEmpty {

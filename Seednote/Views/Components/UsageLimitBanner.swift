@@ -13,6 +13,11 @@ struct UsageLimitBanner: View {
         self.title = "AI\(type)の残りは \(remaining) 回です"
         self.message = "必要に応じて使用回数を確認してください。"
     }
+
+    init(limitReached type: String) {
+        self.title = "AI\(type)の無料回数を使い切りました"
+        self.message = "設定画面で残回数を確認してください。"
+    }
     
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.md) {

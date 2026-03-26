@@ -7,20 +7,24 @@ class FragmentEditorViewModel: ObservableObject {
     @Published var tagInput: String = ""
     @Published var tags: [String] = []
     @Published var isLoading: Bool = false
+    @Published var usageLimitMessage: String?
 
     private let existingFragment: Fragment?
     private let onSave: (Fragment) -> Void
     private let aiService: AIAnalysisServiceProtocol
+    private let usageLimitService: UsageLimitService
     private var currentFragment: Fragment?
     private var hasPersistedFragment: Bool
 
     init(
         fragment: Fragment? = nil,
         aiService: AIAnalysisServiceProtocol? = nil,
+        usageLimitService: UsageLimitService? = nil,
         onSave: @escaping (Fragment) -> Void = { _ in }
     ) {
         self.existingFragment = fragment
         self.aiService = aiService ?? AppRouter.shared.aiService
+        self.usageLimitService = usageLimitService ?? AppRouter.shared.usageLimitService
         self.onSave = onSave
         self.currentFragment = fragment
         self.hasPersistedFragment = fragment != nil
@@ -71,6 +75,10 @@ class FragmentEditorViewModel: ObservableObject {
 
     func analyzeFragment(_ fragment: Fragment) async throws {
         guard !isLoading else { return }
+        guard usageLimitService.canUseAnalysis() else {
+            usageLimitMessage = "AI整理の無料回数を使い切りました"
+            return
+        }
 
         isLoading = true
 
@@ -85,6 +93,7 @@ class FragmentEditorViewModel: ObservableObject {
         fragment.aiImage = response.image
         fragment.aiUseCases = response.useCases
         fragment.typeRawValue = response.type.rawValue
+        usageLimitService.consumeAnalysis()
     }
 
     private var trimmedBody: String {

@@ -16,8 +16,7 @@ class SettingsViewModel: ObservableObject {
         self.subscriptionService = subscriptionService
         self.usageLimitService = usageLimitService
         self.subscriptionTier = subscriptionService.currentTier
-        self.analysisRemaining = usageLimitService.analysisRemaining()
-        self.templateRemaining = usageLimitService.templateRemaining()
+        refreshUsageLimits()
     }
 
     func purchasePro() async {
@@ -26,5 +25,10 @@ class SettingsViewModel: ObservableObject {
 
     func restorePurchases() async {
         await subscriptionService.restorePurchases()
+    }
+
+    func refreshUsageLimits() {
+        analysisRemaining = usageLimitService.analysisRemaining()
+        templateRemaining = usageLimitService.templateRemaining()
     }
 }

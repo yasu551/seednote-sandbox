@@ -115,6 +115,9 @@ struct SettingsView: View {
             }
             .navigationTitle("設定")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                viewModel.refreshUsageLimits()
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("閉じる", action: { dismiss() })

@@ -5,6 +5,7 @@ class GeneratedDraftViewModel: ObservableObject {
     var draft: GeneratedDraft
     @Published var isLoading: Bool = false
     @Published var draftContent: String = ""
+    @Published var usageLimitMessage: String?
     
     private let aiService: AIAnalysisServiceProtocol
     private let repository: FragmentRepositoryProtocol
@@ -34,6 +35,10 @@ class GeneratedDraftViewModel: ObservableObject {
     func generateDraft() async {
         guard let template = draft.template else { return }
         guard !isLoading else { return }
+        guard usageLimit.canUseTemplate() else {
+            usageLimitMessage = "再利用生成の無料回数を使い切りました"
+            return
+        }
 
         isLoading = true
 

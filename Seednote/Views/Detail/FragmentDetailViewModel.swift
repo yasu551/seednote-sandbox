@@ -6,12 +6,14 @@ class FragmentDetailViewModel: ObservableObject {
     @Published var fragment: Fragment
     @Published var relatedFragments: [RelatedFragment] = []
     @Published var isLoading: Bool = false
+    @Published var usageLimitMessage: String?
 
     let reuseTemplates: [TemplateType] = [.essayOutline, .shortStoryCore, .appIdea]
     
     private let repository: FragmentRepositoryProtocol
     private let aiService: AIAnalysisServiceProtocol
     private let relatedService: RelatedFragmentServiceProtocol
+    private let usageLimitService: UsageLimitService
     private let allFragments: [Fragment]
     private var relatedCandidates: [Fragment]
     
@@ -20,12 +22,14 @@ class FragmentDetailViewModel: ObservableObject {
         repository: FragmentRepositoryProtocol,
         aiService: AIAnalysisServiceProtocol,
         relatedService: RelatedFragmentServiceProtocol,
-        allFragments: [Fragment]
+        allFragments: [Fragment],
+        usageLimitService: UsageLimitService? = nil
     ) {
         self.fragment = fragment
         self.repository = repository
         self.aiService = aiService
         self.relatedService = relatedService
+        self.usageLimitService = usageLimitService ?? AppRouter.shared.usageLimitService
         self.allFragments = allFragments
         self.relatedCandidates = allFragments
         refreshRelatedFragments()
@@ -51,6 +55,10 @@ class FragmentDetailViewModel: ObservableObject {
     
     func reanalyzeFragment() async {
         guard !isLoading else { return }
+        guard usageLimitService.canUseAnalysis() else {
+            usageLimitMessage = "AI整理の無料回数を使い切りました"
+            return
+        }
 
         isLoading = true
 
@@ -67,6 +75,7 @@ class FragmentDetailViewModel: ObservableObject {
             fragment.aiImage = response.image
             fragment.aiUseCases = response.useCases
             fragment.typeRawValue = response.type.rawValue
+            usageLimitService.consumeAnalysis()
 
             try repository.update(fragment)
             refreshRelatedFragments()

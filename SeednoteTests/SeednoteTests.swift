@@ -17,6 +17,22 @@ struct SeednoteTests {
     }
 
     @MainActor
+    @Test func SettingsViewModelは利用後に残回数を再読込できる() {
+        let usageLimitService = UsageLimitService()
+        let viewModel = SettingsViewModel(
+            subscriptionService: SettingsTestSubscriptionService(),
+            usageLimitService: usageLimitService
+        )
+
+        usageLimitService.consumeAnalysis()
+        usageLimitService.consumeTemplate()
+        viewModel.refreshUsageLimits()
+
+        #expect(viewModel.analysisRemaining == 9)
+        #expect(viewModel.templateRemaining == 4)
+    }
+
+    @MainActor
     @Test func FragmentEditorViewModelは編集モードを判定できる() {
         let existingFragment = Fragment(title: "既存", body: "本文")
 
@@ -109,6 +125,26 @@ struct SeednoteTests {
         #expect(savedFragment?.type == .question)
         #expect(viewModel.isLoading == false)
         #expect(retriedFragment?.id == savedFragment?.id)
+    }
+
+    @MainActor
+    @Test func FragmentEditorViewModelはAI整理残回数がなければ分析せずメッセージを出す() async throws {
+        let usageLimitService = UsageLimitService()
+        for _ in 0..<10 {
+            usageLimitService.consumeAnalysis()
+        }
+        let aiService = TrackingAIAnalysisService()
+        let fragment = Fragment(title: "断片", body: "本文")
+        let viewModel = FragmentEditorViewModel(
+            aiService: aiService,
+            usageLimitService: usageLimitService
+        )
+
+        try await viewModel.analyzeFragment(fragment)
+
+        #expect(aiService.analyzeCallCount == 0)
+        #expect(viewModel.usageLimitMessage == "AI整理の無料回数を使い切りました")
+        #expect(usageLimitService.analysisRemaining() == 0)
     }
 
     @MainActor
@@ -213,6 +249,34 @@ struct SeednoteTests {
     }
 
     @MainActor
+    @Test func FragmentDetailViewModelはAI整理残回数がなければ再整理しない() async {
+        let fragment = Fragment(
+            title: "断片",
+            body: "本文"
+        )
+        let usageLimitService = UsageLimitService()
+        for _ in 0..<10 {
+            usageLimitService.consumeAnalysis()
+        }
+        let repository = MockFragmentRepository()
+        let aiService = TrackingAIAnalysisService()
+        let viewModel = FragmentDetailViewModel(
+            fragment: fragment,
+            repository: repository,
+            aiService: aiService,
+            relatedService: RelatedFragmentService(),
+            allFragments: [],
+            usageLimitService: usageLimitService
+        )
+
+        await viewModel.reanalyzeFragment()
+
+        #expect(aiService.analyzeCallCount == 0)
+        #expect(repository.updatedFragment == nil)
+        #expect(viewModel.usageLimitMessage == "AI整理の無料回数を使い切りました")
+    }
+
+    @MainActor
     @Test func FragmentDetailViewModelは候補断片から関連断片を読み込める() {
         let fragment = Fragment(
             id: UUID(uuidString: "10000000-0000-0000-0000-000000000001")!,
@@ -281,6 +345,32 @@ struct SeednoteTests {
         #expect(viewModel.draftContent == viewModel.draft.content)
         #expect(viewModel.draftContent.contains("エッセイ骨子"))
         #expect(viewModel.isLoading == false)
+    }
+
+    @MainActor
+    @Test func GeneratedDraftViewModelは再利用残回数がなければ生成しない() async {
+        let fragment = Fragment(
+            title: "種",
+            body: "朝の光で気分が少し変わった"
+        )
+        let usageLimitService = UsageLimitService()
+        for _ in 0..<5 {
+            usageLimitService.consumeTemplate()
+        }
+        let aiService = TrackingAIAnalysisService()
+        let viewModel = GeneratedDraftViewModel(
+            fragment: fragment,
+            template: .essayOutline,
+            aiService: aiService,
+            repository: MockFragmentRepository(),
+            usageLimit: usageLimitService
+        )
+
+        await viewModel.generateDraft()
+
+        #expect(aiService.generateDraftCallCount == 0)
+        #expect(viewModel.draftContent.isEmpty)
+        #expect(viewModel.usageLimitMessage == "再利用生成の無料回数を使い切りました")
     }
 
     @MainActor
@@ -616,6 +706,28 @@ private final class MockClipboardService: ClipboardServiceProtocol {
 
     func copy(_ text: String) {
         copiedText = text
+    }
+}
+
+private final class TrackingAIAnalysisService: AIAnalysisServiceProtocol {
+    private(set) var analyzeCallCount = 0
+    private(set) var generateDraftCallCount = 0
+
+    func analyze(fragmentText: String) async throws -> AIAnalysisResponse {
+        analyzeCallCount += 1
+        return AIAnalysisResponse(
+            summary: "summary",
+            type: .idea,
+            question: "question",
+            claim: "claim",
+            image: "image",
+            useCases: []
+        )
+    }
+
+    func generateDraft(fragmentText: String, template: TemplateType) async throws -> DraftGenerationResponse {
+        generateDraftCallCount += 1
+        return DraftGenerationResponse(content: "draft")
     }
 }
 

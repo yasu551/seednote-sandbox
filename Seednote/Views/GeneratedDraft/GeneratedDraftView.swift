@@ -21,6 +21,13 @@ struct GeneratedDraftView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: Spacing.md) {
+                if let usageLimitMessage = viewModel.usageLimitMessage {
+                    UsageLimitBanner(
+                        title: "利用回数の上限です",
+                        message: usageLimitMessage
+                    )
+                }
+
                 SectionCardView(title: "もとの断片") {
                     VStack(alignment: .leading, spacing: Spacing.sm) {
                         if !fragment.title.isEmpty {
