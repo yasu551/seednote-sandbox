@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 
 @MainActor
 class GeneratedDraftViewModel: ObservableObject {
@@ -28,27 +27,28 @@ class GeneratedDraftViewModel: ObservableObject {
             templateRawValue: template.rawValue
         )
     }
-    
-    func generateDraft() {
+
+    func generateDraft() async {
         guard let template = draft.template else { return }
-        
+        guard !isLoading else { return }
+
         isLoading = true
-        
-        Task {
-            do {
-                let response = try await aiService.generateDraft(
-                    fragmentText: fragment.body,
-                    template: template
-                )
-                
-                draft.content = response.content
-                draftContent = response.content
-                usageLimit.consumeTemplate()
-                isLoading = false
-            } catch {
-                print("Failed to generate draft: \(error)")
-                isLoading = false
-            }
+
+        defer {
+            isLoading = false
+        }
+
+        do {
+            let response = try await aiService.generateDraft(
+                fragmentText: fragment.body,
+                template: template
+            )
+
+            draft.content = response.content
+            draftContent = response.content
+            usageLimit.consumeTemplate()
+        } catch {
+            print("Failed to generate draft: \(error)")
         }
     }
     

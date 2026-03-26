@@ -249,6 +249,28 @@ struct SeednoteTests {
         #expect(viewModel.reuseTemplates.map(\.displayName) == ["エッセイの骨子", "短編の核", "アプリ案"])
     }
 
+    @MainActor
+    @Test func GeneratedDraftViewModelはドラフト生成結果を編集用本文へ反映する() async {
+        let fragment = Fragment(
+            title: "種",
+            body: "朝の光で気分が少し変わった"
+        )
+        let viewModel = GeneratedDraftViewModel(
+            fragment: fragment,
+            template: .essayOutline,
+            aiService: MockAIAnalysisService(),
+            repository: MockFragmentRepository(),
+            usageLimit: UsageLimitService()
+        )
+
+        await viewModel.generateDraft()
+
+        #expect(viewModel.draft.content.isEmpty == false)
+        #expect(viewModel.draftContent == viewModel.draft.content)
+        #expect(viewModel.draftContent.contains("エッセイ骨子"))
+        #expect(viewModel.isLoading == false)
+    }
+
     @Test func RelatedFragmentServiceは自身を除外して関連度順の上位3件を返す() {
         let target = Fragment(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
