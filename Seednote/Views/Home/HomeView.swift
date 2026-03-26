@@ -11,11 +11,19 @@ struct HomeView: View {
                 ScrollView {
                     VStack(spacing: Spacing.md) {
                         SearchBarView(text: $viewModel.searchText, placeholder: "検索...")
-                        HomeFilterBar(selectedStatus: $viewModel.selectedStatus)
-                        FragmentListView(
-                            fragments: viewModel.fragments,
-                            onTapAdd: { showAddSheet = true }
-                        )
+                        HomeFilterBar(selectedFilter: $viewModel.selectedFilter)
+
+                        if viewModel.filteredFragments.isEmpty {
+                            EmptyStateView(
+                                title: "該当する断片がありません",
+                                message: "検索条件またはステータスを変更してください。"
+                            )
+                        } else {
+                            FragmentListView(
+                                fragments: viewModel.filteredFragments,
+                                onTapAdd: { showAddSheet = true }
+                            )
+                        }
                     }
                     .padding(Spacing.md)
                 }
@@ -52,7 +60,7 @@ struct HomeView: View {
             .onChange(of: viewModel.searchText) { _, _ in
                 viewModel.applyFilters()
             }
-            .onChange(of: viewModel.selectedStatus) { _, _ in
+            .onChange(of: viewModel.selectedFilter) { _, _ in
                 viewModel.applyFilters()
             }
         }

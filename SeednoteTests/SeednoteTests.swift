@@ -7,35 +7,62 @@ struct SeednoteTests {
     @Test func HomeViewModelは初期状態でPreviewDataの断片一覧を保持する() {
         let viewModel = HomeViewModel()
 
-        #expect(viewModel.fragments.count == PreviewData.sampleFragments.count)
-        #expect(viewModel.fragments.map(\.id) == PreviewData.sampleFragments.map(\.id))
+        #expect(viewModel.filteredFragments.count == PreviewData.sampleFragments.count)
+        #expect(viewModel.filteredFragments.map(\.id) == PreviewData.sampleFragments.map(\.id))
     }
 
     @MainActor
     @Test func HomeViewModelはステータスで断片を絞り込める() {
         let viewModel = HomeViewModel()
 
-        viewModel.selectedStatus = .growing
+        viewModel.selectedFilter = .growing
         viewModel.applyFilters()
 
-        #expect(viewModel.fragments.count == 1)
-        #expect(viewModel.fragments.first?.id == PreviewData.processedFragment.id)
+        #expect(viewModel.filteredFragments.count == 1)
+        #expect(viewModel.filteredFragments.first?.id == PreviewData.processedFragment.id)
     }
 
     @MainActor
-    @Test func HomeViewModelはタイトルと本文の両方を検索対象にする() {
+    @Test func HomeViewModelはタイトルと本文とタグを検索対象にする() {
         let viewModel = HomeViewModel()
 
         viewModel.searchText = "ナビゲーション"
         viewModel.applyFilters()
-        let titleMatchedIDs = viewModel.fragments.map(\.id)
+        let titleMatchedIDs = viewModel.filteredFragments.map(\.id)
 
         viewModel.searchText = "選び直したつながり"
         viewModel.applyFilters()
-        let bodyMatchedIDs = viewModel.fragments.map(\.id)
+        let bodyMatchedIDs = viewModel.filteredFragments.map(\.id)
+
+        viewModel.searchText = "アプリ開発"
+        viewModel.applyFilters()
+        let tagMatchedIDs = viewModel.filteredFragments.map(\.id)
 
         #expect(titleMatchedIDs == [PreviewData.processedFragment.id])
         #expect(bodyMatchedIDs == [PreviewData.usedFragment.id])
+        #expect(tagMatchedIDs == [PreviewData.processedFragment.id])
+    }
+
+    @MainActor
+    @Test func HomeViewModelはステータス絞り込みと検索を併用できる() {
+        let viewModel = HomeViewModel()
+
+        viewModel.selectedFilter = .used
+        viewModel.searchText = "家族"
+        viewModel.applyFilters()
+
+        #expect(viewModel.filteredFragments.map(\.id) == [PreviewData.usedFragment.id])
+    }
+
+    @MainActor
+    @Test func HomeViewModelは一致する断片がなければ空配列になる() {
+        let viewModel = HomeViewModel()
+
+        viewModel.selectedFilter = .growing
+        viewModel.searchText = "存在しない検索語"
+        viewModel.applyFilters()
+
+        #expect(viewModel.filteredFragments.isEmpty)
     }
 
     @Test func FragmentCardViewはタイトルを優先しsummaryは空なら表示しない() {

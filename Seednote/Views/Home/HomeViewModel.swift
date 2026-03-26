@@ -2,22 +2,22 @@ import Foundation
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    @Published var fragments: [Fragment]
     @Published var searchText: String = ""
-    @Published var selectedStatus: FragmentStatus? = nil
+    @Published var selectedFilter: FragmentStatus? = nil
+    @Published var filteredFragments: [Fragment]
 
     private let allFragments: [Fragment]
 
     init(fragments: [Fragment] = PreviewData.sampleFragments) {
         self.allFragments = fragments
-        self.fragments = fragments
+        self.filteredFragments = fragments
     }
 
     func applyFilters() {
         var result = allFragments
 
-        if let selectedStatus {
-            result = result.filter { $0.status == selectedStatus }
+        if let selectedFilter {
+            result = result.filter { $0.status == selectedFilter }
         }
 
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -25,9 +25,10 @@ class HomeViewModel: ObservableObject {
             result = result.filter { fragment in
                 fragment.title.localizedCaseInsensitiveContains(query)
                     || fragment.body.localizedCaseInsensitiveContains(query)
+                    || fragment.tags.contains { $0.localizedCaseInsensitiveContains(query) }
             }
         }
 
-        fragments = result
+        filteredFragments = result
     }
 }

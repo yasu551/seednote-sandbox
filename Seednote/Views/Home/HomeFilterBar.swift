@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct HomeFilterBar: View {
-    @Binding var selectedStatus: FragmentStatus?
+    @Binding var selectedFilter: FragmentStatus?
 
     var body: some View {
-        Picker("フィルタ", selection: $selectedStatus) {
+        Picker("フィルタ", selection: $selectedFilter) {
             Text("すべて").tag(Optional<FragmentStatus>.none)
             Text(FragmentStatus.unprocessed.displayName).tag(Optional(FragmentStatus.unprocessed))
             Text(FragmentStatus.growing.displayName).tag(Optional(FragmentStatus.growing))
@@ -20,9 +20,9 @@ struct HomeFilterBar: View {
 }
 
 private struct HomeFilterBarPreview: View {
-    @State private var selectedStatus: FragmentStatus? = .growing
+    @State private var selectedFilter: FragmentStatus? = .growing
 
     var body: some View {
-        HomeFilterBar(selectedStatus: $selectedStatus)
+        HomeFilterBar(selectedFilter: $selectedFilter)
     }
 }
