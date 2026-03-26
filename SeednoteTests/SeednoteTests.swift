@@ -150,6 +150,20 @@ struct SeednoteTests {
         #expect(repository.deletedFragment?.id == fragment.id)
     }
 
+    @Test func AIAnalysisServiceは質問断片を質問向けの分析結果として返す() async throws {
+        let service: AIAnalysisServiceProtocol = AIAnalysisService()
+        let fragmentText = "なぜこの違和感を毎回見逃してしまうのか？"
+
+        let response = try await service.analyze(fragmentText: fragmentText)
+
+        #expect(response.type == .question)
+        #expect(response.summary.isEmpty == false)
+        #expect(response.question.isEmpty == false)
+        #expect(response.claim.isEmpty == false)
+        #expect(response.image == "❓")
+        #expect(response.useCases.count == 3)
+    }
+
     @MainActor
     @Test func SwiftDataFragmentRepositoryは更新日時の降順で断片を取得できる() throws {
         let container = try makeInMemoryModelContainer()

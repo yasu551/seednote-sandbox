@@ -8,7 +8,3 @@ struct AIAnalysisResponse {
     let image: String
     let useCases: [String]
 }
-
-struct DraftGenerationResponse {
-    let content: String
-}

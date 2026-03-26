@@ -2,16 +2,24 @@ import Foundation
 
 class MockAIAnalysisService: AIAnalysisServiceProtocol {
     func analyze(fragmentText: String) async throws -> AIAnalysisResponse {
-        try await Task.sleep(nanoseconds: UInt64(0.5 * Double(NSEC_PER_SEC)))
-        
-        let types: [FragmentType] = [.question, .claim, .idea, .world, .observation]
-        let randomType = types.randomElement() ?? .idea
-        
+        try await Task.sleep(for: .milliseconds(100))
+
+        if isQuestion(fragmentText) {
+            return AIAnalysisResponse(
+                summary: "この断片は、繰り返し見逃している違和感の意味を問い直そうとしています。",
+                type: .question,
+                question: "違和感を見逃さないために、次は何を記録すべきか？",
+                claim: "小さな違和感は、思考を深める入口になりうる。",
+                image: "❓",
+                useCases: ["問いのメモとして深掘り", "エッセイの導入テーマに転用", "振り返り用の観察記録に再利用"]
+            )
+        }
+
         return AIAnalysisResponse(
-            summary: "「\(fragmentText.prefix(30))...」は、日常の中の重要な気づきを表現しています。",
-            type: randomType,
-            question: "この経験から何を学べるか？",
-            claim: "私たちは日々の瞬間を大切にすべきだ。",
+            summary: "「\(fragmentText.prefix(30))」は、日常の中の気づきを短く捉えた断片です。",
+            type: .idea,
+            question: "この断片をさらに広げるには何が必要か？",
+            claim: "断片的な気づきにも再利用できる核がある。",
             image: "📝",
             useCases: ["エッセイとして展開", "短編の題材に", "ブログ記事のネタに"]
         )
@@ -80,5 +88,9 @@ class MockAIAnalysisService: AIAnalysisServiceProtocol {
         }
         
         return DraftGenerationResponse(content: draftContent)
+    }
+
+    private func isQuestion(_ text: String) -> Bool {
+        ["?", "？", "なぜ", "どうして"].contains { text.contains($0) }
     }
 }
