@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__XcodeBuildMCP__session_show_defaults",
+      "mcp__XcodeBuildMCP__list_schemes",
+      "mcp__XcodeBuildMCP__list_sims",
+      "mcp__XcodeBuildMCP__session_set_defaults",
+      "mcp__XcodeBuildMCP__test_sim",
+      "Bash(xcodegen generate:*)"
+    ]
+  }
+}

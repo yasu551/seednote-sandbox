@@ -57,7 +57,18 @@
 		F0725E282D700C4731199366 /* SeednoteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA93622A38DA638B5CE514F6 /* SeednoteApp.swift */; };
 		F0A74598D96A522729FC23E0 /* FragmentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D88BAEA1AC845504406970 /* FragmentDetailView.swift */; };
 		FA2F648ECFF2A0A67BD679ED /* LoadingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A15E69717D34188CC06DBDE /* LoadingOverlayView.swift */; };
+		FD34DD460F6393A56102E415 /* SeednoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FFD6753543546EBC3A77901 /* SeednoteTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		166EF09D1D682FF1E9477A2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FD445B935B7B1C62FD6189ED /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7E515B83AE474681F5DD0E76;
+			remoteInfo = Seednote;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		062EB268BFF4DCCCA88B0839 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
@@ -69,6 +80,7 @@
 		281FCCF26C0C10780CEDEF7E /* MockAIAnalysisService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAIAnalysisService.swift; sourceTree = "<group>"; };
 		285D297B831B2466E099F0AE /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
 		2AE54C643F02B2EF3C5452C0 /* StatusBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBadgeView.swift; sourceTree = "<group>"; };
+		2FFD6753543546EBC3A77901 /* SeednoteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeednoteTests.swift; sourceTree = "<group>"; };
 		32AE05FC8E91B97EF13AE356 /* GeneratedDraftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedDraftView.swift; sourceTree = "<group>"; };
 		371BE8114A4F27D74C011A36 /* UsageLimitBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageLimitBanner.swift; sourceTree = "<group>"; };
 		3D98B16936C77382B0825929 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
@@ -86,6 +98,7 @@
 		637D0EEA03519FBA6D23CBD3 /* SectionCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionCardView.swift; sourceTree = "<group>"; };
 		69741ABD6E49BD14F9088CDA /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		73E83E1DB09029026CCD38D4 /* FragmentCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentCardView.swift; sourceTree = "<group>"; };
+		7510D845F8E85007FEA18FD3 /* SeednoteTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = SeednoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A15E69717D34188CC06DBDE /* LoadingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingOverlayView.swift; sourceTree = "<group>"; };
 		7A70A3E21333F14C52826D2D /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		7CAF159A4E9A91AB67A977B3 /* TemplateType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplateType.swift; sourceTree = "<group>"; };
@@ -110,7 +123,7 @@
 		F267947BBFDEC5644588619C /* ClipboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardService.swift; sourceTree = "<group>"; };
 		F298611B31BA0F9E9AB7F06C /* AIAnalysisResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAnalysisResponse.swift; sourceTree = "<group>"; };
 		F5E3433C8398ADB353CF3B60 /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
-		F977388778E1570246E85EA3 /* Seednote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Seednote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F977388778E1570246E85EA3 /* Seednote.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Seednote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA93622A38DA638B5CE514F6 /* SeednoteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeednoteApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -197,6 +210,14 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		44B5555594548C1779A35529 /* SeednoteTests */ = {
+			isa = PBXGroup;
+			children = (
+				2FFD6753543546EBC3A77901 /* SeednoteTests.swift */,
+			);
+			path = SeednoteTests;
+			sourceTree = "<group>";
+		};
 		4B36F7EE1BF4EB3DCCE88663 /* AI */ = {
 			isa = PBXGroup;
 			children = (
@@ -212,6 +233,7 @@
 			isa = PBXGroup;
 			children = (
 				F977388778E1570246E85EA3 /* Seednote.app */,
+				7510D845F8E85007FEA18FD3 /* SeednoteTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -280,6 +302,7 @@
 			isa = PBXGroup;
 			children = (
 				290B647718F5F092B617A165 /* Seednote */,
+				44B5555594548C1779A35529 /* SeednoteTests */,
 				7B7BBE086D4A199E799083F2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -336,6 +359,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		14B7E70EDEB3075993074689 /* SeednoteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 462AAE35BF6BFDDD87A53203 /* Build configuration list for PBXNativeTarget "SeednoteTests" */;
+			buildPhases = (
+				CCBDF3C26BE507E6AAC663ED /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB1BC0188AE834BFB605A80F /* PBXTargetDependency */,
+			);
+			name = SeednoteTests;
+			packageProductDependencies = (
+			);
+			productName = SeednoteTests;
+			productReference = 7510D845F8E85007FEA18FD3 /* SeednoteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		7E515B83AE474681F5DD0E76 /* Seednote */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2BCF674652DA2B0B476FE1F4 /* Build configuration list for PBXNativeTarget "Seednote" */;
@@ -363,6 +404,7 @@
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					7E515B83AE474681F5DD0E76 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -382,6 +424,7 @@
 			projectRoot = "";
 			targets = (
 				7E515B83AE474681F5DD0E76 /* Seednote */,
+				14B7E70EDEB3075993074689 /* SeednoteTests */,
 			);
 		};
 /* End PBXProject section */
@@ -444,7 +487,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CCBDF3C26BE507E6AAC663ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD34DD460F6393A56102E415 /* SeednoteTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB1BC0188AE834BFB605A80F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7E515B83AE474681F5DD0E76 /* Seednote */;
+			targetProxy = 166EF09D1D682FF1E9477A2F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1B5EE8CAD6FBEC63A98B4A78 /* Debug */ = {
@@ -510,13 +569,51 @@
 			};
 			name = Debug;
 		};
+		1DB33F28E8AE7280EEE658BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.SeednoteTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Seednote.app/Seednote";
+			};
+			name = Debug;
+		};
+		2F5250291862BBEEDFF2E2B5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.SeednoteTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Seednote.app/Seednote";
+			};
+			name = Release;
+		};
 		C2C050FA9FC74BFA14A875CA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 64CTNAC3G8;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Seednote/Resources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -614,6 +711,15 @@
 			buildConfigurations = (
 				E634E5CA5260F7363A84176D /* Debug */,
 				C2C050FA9FC74BFA14A875CA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		462AAE35BF6BFDDD87A53203 /* Build configuration list for PBXNativeTarget "SeednoteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DB33F28E8AE7280EEE658BC /* Debug */,
+				2F5250291862BBEEDFF2E2B5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

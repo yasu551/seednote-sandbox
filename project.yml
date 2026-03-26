@@ -31,3 +31,16 @@ targets:
           - UIInterfaceOrientationPortrait
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
+
+  SeednoteTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: SeednoteTests
+    dependencies:
+      - target: Seednote
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        GENERATE_INFOPLIST_FILE: YES
