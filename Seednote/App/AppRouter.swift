@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+@MainActor
 class AppRouter {
     static let shared = AppRouter()
     

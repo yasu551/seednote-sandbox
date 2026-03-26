@@ -181,7 +181,7 @@ struct FragmentDetailView: View {
                 .presentationDetents([.medium, .large])
         }
         .alert("削除確認", isPresented: $showDeleteConfirm) {
-            Button(role: .cancel) { }
+            Button("キャンセル", role: .cancel) { }
             Button(role: .destructive) {
                 viewModel.deleteFragment()
                 dismiss()

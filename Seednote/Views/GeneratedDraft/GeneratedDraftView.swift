@@ -41,7 +41,7 @@ struct GeneratedDraftView: View {
                             .font(Typography.title2)
                             .fontWeight(.bold)
                         
-                        Text("「\(fragment.title.isEmpty ? fragment.body.prefix(30) : fragment.title)...」から生成")
+                        Text("「\(fragment.title.isEmpty ? String(fragment.body.prefix(30)) : fragment.title)...」から生成")
                             .font(Typography.caption1)
                             .foregroundColor(Colors.textSecondary)
                     }

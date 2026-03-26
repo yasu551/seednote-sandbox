@@ -3,17 +3,17 @@ import SwiftUI
 struct FlowLayout: Layout {
     var spacing: CGFloat = 8
     
-    func sizeThatFits(proposal: ProposedSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let result = FlowResult(in: proposal.width ?? .infinity, subviews: subviews, spacing: spacing)
         return result.size
     }
     
-    func placeSubviews(in bounds: CGRect, proposal: ProposedSize, subviews: Subviews, cache: inout ()) {
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let result = FlowResult(in: bounds.width, subviews: subviews, spacing: spacing)
         for (index, subview) in subviews.enumerated() {
             subview.place(
                 at: result.frames[index].origin,
-                proposal: ProposedSize(result.frames[index].size)
+                proposal: ProposedViewSize(result.frames[index].size)
             )
         }
     }
