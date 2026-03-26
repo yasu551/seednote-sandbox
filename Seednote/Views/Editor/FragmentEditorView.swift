@@ -1,64 +1,73 @@
 import SwiftUI
-import SwiftData
 
 struct FragmentEditorView: View {
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: FragmentEditorViewModel
-    
-    private let usageLimit: UsageLimitService
-    
-    init(fragment: Fragment? = nil) {
-        let repository = SwiftDataFragmentRepository(
-            modelContext: AppRouter.shared.modelContainer.mainContext
+
+    init(
+        fragment: Fragment? = nil,
+        onSave: @escaping (Fragment) -> Void = { _ in }
+    ) {
+        _viewModel = StateObject(
+            wrappedValue: FragmentEditorViewModel(
+                fragment: fragment,
+                onSave: onSave
+            )
         )
-        let aiService = AppRouter.shared.aiService
-        let usageLimit = AppRouter.shared.usageLimitService
-        self.usageLimit = usageLimit
-        
-        _viewModel = StateObject(wrappedValue: FragmentEditorViewModel(
-            fragment: fragment,
-            repository: repository,
-            aiService: aiService,
-            usageLimit: usageLimit
-        ))
     }
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: Spacing.md) {
-                    // Title Input
-                    TextField("タイトル (オプション)", text: $viewModel.title)
+                VStack(alignment: .leading, spacing: Spacing.md) {
+                    TextField("タイトル（任意）", text: $viewModel.title)
                         .font(Typography.headline)
                         .padding(Spacing.md)
                         .background(Colors.surface)
-                        .cornerRadius(Spacing.cornerRadius)
-                        .padding(Spacing.md)
-                    
-                    // Body Input
-                    TextEditor(text: $viewModel.body)
-                        .font(Typography.body)
-                        .frame(minHeight: 200)
-                        .padding(Spacing.md)
-                        .background(Colors.surface)
-                        .cornerRadius(Spacing.cornerRadius)
-                        .padding(Spacing.md)
-                    
-                    // Tags Input
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: Spacing.cornerRadius,
+                                style: .continuous
+                            )
+                        )
+
                     VStack(alignment: .leading, spacing: Spacing.sm) {
-                        Text("タグ (カンマ区切り)")
+                        Text("本文")
                             .font(Typography.subheadline)
                             .foregroundColor(Colors.textSecondary)
-                        
-                        TextField("例: 感覚, 朝, 光", text: $viewModel.tagInput)
+
+                        TextEditor(text: $viewModel.body)
+                            .font(Typography.body)
+                            .frame(minHeight: 240)
+                            .padding(Spacing.sm)
+                            .background(Colors.surface)
+                            .clipShape(
+                                RoundedRectangle(
+                                    cornerRadius: Spacing.cornerRadius,
+                                    style: .continuous
+                                )
+                            )
+                    }
+
+                    VStack(alignment: .leading, spacing: Spacing.sm) {
+                        Text("タグ（カンマ区切り）")
+                            .font(Typography.subheadline)
+                            .foregroundColor(Colors.textSecondary)
+
+                        TextField("例: 発想, 朝, UI", text: $viewModel.tagInput)
                             .font(Typography.body)
                             .padding(Spacing.md)
                             .background(Colors.surface)
-                            .cornerRadius(Spacing.cornerRadius)
+                            .clipShape(
+                                RoundedRectangle(
+                                    cornerRadius: Spacing.cornerRadius,
+                                    style: .continuous
+                                )
+                            )
                             .onChange(of: viewModel.tagInput) { _, newValue in
                                 viewModel.tags = newValue.tagsFromCommaSeparated()
                             }
-                        
+
                         if !viewModel.tags.isEmpty {
                             FlowLayout(spacing: Spacing.sm) {
                                 ForEach(viewModel.tags, id: \.self) { tag in
@@ -67,64 +76,54 @@ struct FragmentEditorView: View {
                             }
                         }
                     }
-                    .padding(Spacing.md)
-                    
-                    Spacer()
-                    
-                    // Usage Limit Banner
-                    if !viewModel.hasAISummary {
-                        UsageLimitBanner(remaining: usageLimit.analysisRemaining(), type: "整理")
-                            .padding(Spacing.md)
-                    }
-                    
-                    // Buttons
+
                     VStack(spacing: Spacing.md) {
                         PrimaryButton(
                             title: "保存してAI整理",
                             action: {
-                                viewModel.saveAndAnalyze {
+                                if viewModel.saveAndAnalyze() != nil {
                                     dismiss()
                                 }
                             },
-                            isLoading: viewModel.isLoading,
-                            disabled: viewModel.body.isEmpty
+                            disabled: !viewModel.canSave
                         )
-                        
+
                         SecondaryButton(
                             title: "保存",
                             action: {
-                                viewModel.saveFragment()
-                                dismiss()
-                            }
+                                if viewModel.saveFragment() != nil {
+                                    dismiss()
+                                }
+                            },
+                            disabled: !viewModel.canSave
                         )
-                        
+
                         SecondaryButton(
                             title: "キャンセル",
                             action: { dismiss() }
                         )
                     }
-                    .padding(.bottom, Spacing.md)
+                    .padding(.top, Spacing.md)
                 }
+                .padding(Spacing.md)
             }
-            .navigationTitle("新規メモ")
+            .navigationTitle(viewModel.screenTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("キャンセル", action: { dismiss() })
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("キャンセル") {
+                        dismiss()
+                    }
                 }
-            }
-            .overlay {
-                LoadingOverlayView(isShowing: $viewModel.isLoading, message: "AI で整理中...")
-            }
-            .alert("エラー", isPresented: $viewModel.showError) {
-                Button("了解") { }
-            } message: {
-                Text(viewModel.errorMessage)
             }
         }
     }
 }
 
-#Preview {
+#Preview("新規作成") {
     FragmentEditorView()
+}
+
+#Preview("編集") {
+    FragmentEditorView(fragment: PreviewData.processedFragment)
 }

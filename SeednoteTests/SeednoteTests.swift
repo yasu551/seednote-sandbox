@@ -4,6 +4,67 @@ import Testing
 
 struct SeednoteTests {
     @MainActor
+    @Test func FragmentEditorViewModelは本文が空白のみなら保存できない() {
+        let viewModel = FragmentEditorViewModel()
+        viewModel.title = "仮タイトル"
+        viewModel.body = "  \n "
+
+        let fragment = viewModel.saveFragment()
+
+        #expect(viewModel.canSave == false)
+        #expect(fragment == nil)
+    }
+
+    @MainActor
+    @Test func FragmentEditorViewModelは新規モードで入力内容を保存できる() {
+        var savedFragment: Fragment?
+        let viewModel = FragmentEditorViewModel { fragment in
+            savedFragment = fragment
+        }
+        viewModel.title = "新規断片"
+        viewModel.body = "\n本文です\n"
+        viewModel.tagInput = "着想, 朝, UI"
+
+        let fragment = viewModel.saveFragment()
+
+        #expect(fragment != nil)
+        #expect(fragment?.title == "新規断片")
+        #expect(fragment?.body == "本文です")
+        #expect(fragment?.tags == ["着想", "朝", "UI"])
+        #expect(savedFragment?.id == fragment?.id)
+    }
+
+    @MainActor
+    @Test func FragmentEditorViewModelは編集モードで既存断片を更新できる() {
+        let fragment = Fragment(
+            title: "編集前タイトル",
+            body: "編集前本文",
+            tags: ["旧タグ"]
+        )
+        var savedFragment: Fragment?
+        let viewModel = FragmentEditorViewModel(fragment: fragment) { saved in
+            savedFragment = saved
+        }
+
+        #expect(viewModel.screenTitle == "断片を編集")
+        #expect(viewModel.title == "編集前タイトル")
+        #expect(viewModel.body == "編集前本文")
+        #expect(viewModel.tagInput == "旧タグ")
+
+        viewModel.title = "編集後タイトル"
+        viewModel.body = "編集後本文"
+        viewModel.tagInput = "再考, メモ"
+
+        let updatedFragment = viewModel.saveFragment()
+
+        #expect(updatedFragment?.id == fragment.id)
+        #expect(updatedFragment?.title == "編集後タイトル")
+        #expect(updatedFragment?.body == "編集後本文")
+        #expect(updatedFragment?.tags == ["再考", "メモ"])
+        #expect(savedFragment?.id == fragment.id)
+    }
+
+    @MainActor
     @Test func HomeViewModelは初期状態でPreviewDataの断片一覧を保持する() {
         let viewModel = HomeViewModel()
 
@@ -63,6 +124,18 @@ struct SeednoteTests {
         viewModel.applyFilters()
 
         #expect(viewModel.filteredFragments.isEmpty)
+    }
+
+    @MainActor
+    @Test func HomeViewModelは追加した断片を一覧の先頭に反映する() {
+        let existingFragment = Fragment(title: "既存", body: "既存本文")
+        let addedFragment = Fragment(title: "追加", body: "追加本文")
+        let viewModel = HomeViewModel(fragments: [existingFragment])
+
+        viewModel.addFragment(addedFragment)
+
+        #expect(viewModel.filteredFragments.count == 2)
+        #expect(viewModel.filteredFragments.first?.id == addedFragment.id)
     }
 
     @Test func FragmentCardViewはタイトルを優先しsummaryは空なら表示しない() {

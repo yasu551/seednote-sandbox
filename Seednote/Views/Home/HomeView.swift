@@ -52,7 +52,10 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showAddSheet) {
-                HomePlaceholderView(title: "新規追加")
+                FragmentEditorView { fragment in
+                    viewModel.addFragment(fragment)
+                }
+                .presentationDetents([.large])
             }
             .sheet(isPresented: $showSettings) {
                 HomePlaceholderView(title: "設定")

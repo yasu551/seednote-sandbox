@@ -6,11 +6,21 @@ class HomeViewModel: ObservableObject {
     @Published var selectedFilter: FragmentStatus? = nil
     @Published var filteredFragments: [Fragment]
 
-    private let allFragments: [Fragment]
+    private var allFragments: [Fragment]
 
     init(fragments: [Fragment] = PreviewData.sampleFragments) {
         self.allFragments = fragments
         self.filteredFragments = fragments
+    }
+
+    func addFragment(_ fragment: Fragment) {
+        if let index = allFragments.firstIndex(where: { $0.id == fragment.id }) {
+            allFragments[index] = fragment
+        } else {
+            allFragments.insert(fragment, at: 0)
+        }
+
+        applyFilters()
     }
 
     func applyFilters() {
