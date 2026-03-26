@@ -61,6 +61,7 @@
 		EFBD030299EA33A3EC7BFD66 /* ClipboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F267947BBFDEC5644588619C /* ClipboardService.swift */; };
 		F0725E282D700C4731199366 /* SeednoteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA93622A38DA638B5CE514F6 /* SeednoteApp.swift */; };
 		F0A74598D96A522729FC23E0 /* FragmentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D88BAEA1AC845504406970 /* FragmentDetailView.swift */; };
+		F8EACA281051EAE0B34D7F95 /* AIAnalysisSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D8CE793265F0541D4B80EC /* AIAnalysisSectionView.swift */; };
 		FA2F648ECFF2A0A67BD679ED /* LoadingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A15E69717D34188CC06DBDE /* LoadingOverlayView.swift */; };
 		FD34DD460F6393A56102E415 /* SeednoteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FFD6753543546EBC3A77901 /* SeednoteTests.swift */; };
 /* End PBXBuildFile section */
@@ -126,6 +127,7 @@
 		D6FD6748A8A86806222C311C /* FragmentRepositoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentRepositoryProtocol.swift; sourceTree = "<group>"; };
 		DB4A7751ECEBCAD7D74BF19D /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		DF391918D297C2815A627EB7 /* PromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptBuilder.swift; sourceTree = "<group>"; };
+		E8D8CE793265F0541D4B80EC /* AIAnalysisSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAnalysisSectionView.swift; sourceTree = "<group>"; };
 		EB370434D25012D27A9B976E /* FragmentDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentDetailViewModel.swift; sourceTree = "<group>"; };
 		EFCED696E95F15B2BD16EB23 /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		F0561F8D89EDA59AE2910282 /* FragmentRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentRepository.swift; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 		C307F07B892C920E78E4F389 /* Detail */ = {
 			isa = PBXGroup;
 			children = (
+				E8D8CE793265F0541D4B80EC /* AIAnalysisSectionView.swift */,
 				62D88BAEA1AC845504406970 /* FragmentDetailView.swift */,
 				EB370434D25012D27A9B976E /* FragmentDetailViewModel.swift */,
 			);
@@ -450,6 +453,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				17FB791199F13B510F7B48B4 /* AIAnalysisResponse.swift in Sources */,
+				F8EACA281051EAE0B34D7F95 /* AIAnalysisSectionView.swift in Sources */,
 				4946FEDBD94C8408FF1C58EB /* AIAnalysisService.swift in Sources */,
 				3D3F8C49977B567883D3523A /* AIAnalysisServiceProtocol.swift in Sources */,
 				CE639CFAF3DF70AB56382C17 /* AppRouter.swift in Sources */,

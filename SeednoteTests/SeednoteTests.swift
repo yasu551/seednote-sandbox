@@ -150,6 +150,33 @@ struct SeednoteTests {
         #expect(repository.deletedFragment?.id == fragment.id)
     }
 
+    @MainActor
+    @Test func FragmentDetailViewModelはAI整理結果を断片へ保存できる() async {
+        let fragment = Fragment(
+            title: "断片",
+            body: "なぜこの違和感を毎回見逃してしまうのか？"
+        )
+        let repository = MockFragmentRepository()
+        let viewModel = FragmentDetailViewModel(
+            fragment: fragment,
+            repository: repository,
+            aiService: MockAIAnalysisService(),
+            relatedService: RelatedFragmentService(),
+            allFragments: []
+        )
+
+        await viewModel.reanalyzeFragment()
+
+        #expect(viewModel.fragment.aiSummary?.isEmpty == false)
+        #expect(viewModel.fragment.aiQuestion?.isEmpty == false)
+        #expect(viewModel.fragment.aiClaim?.isEmpty == false)
+        #expect(viewModel.fragment.aiImage == "❓")
+        #expect(viewModel.fragment.aiUseCases.count == 3)
+        #expect(viewModel.fragment.type == .question)
+        #expect(repository.updatedFragment?.id == fragment.id)
+        #expect(viewModel.isLoading == false)
+    }
+
     @Test func AIAnalysisServiceは質問断片を質問向けの分析結果として返す() async throws {
         let service: AIAnalysisServiceProtocol = AIAnalysisService()
         let fragmentText = "なぜこの違和感を毎回見逃してしまうのか？"
@@ -357,11 +384,14 @@ private func makeInMemoryModelContainer() throws -> ModelContainer {
 
 private final class MockFragmentRepository: FragmentRepositoryProtocol {
     private(set) var deletedFragment: Fragment?
+    private(set) var updatedFragment: Fragment?
 
     func fetchAll() throws -> [Fragment] { [] }
     func save(_ fragment: Fragment) throws {}
     func delete(_ fragment: Fragment) throws {
         deletedFragment = fragment
     }
-    func update(_ fragment: Fragment) throws {}
+    func update(_ fragment: Fragment) throws {
+        updatedFragment = fragment
+    }
 }

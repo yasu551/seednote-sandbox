@@ -20,46 +20,67 @@ struct FragmentDetailView: View {
 
     var body: some View {
         ScrollView {
-            SectionCardView(title: "原文") {
-                VStack(alignment: .leading, spacing: Spacing.md) {
-                    if !viewModel.fragment.title.isEmpty {
-                        Text(viewModel.fragment.title)
-                            .font(Typography.headline)
+            VStack(spacing: Spacing.md) {
+                SectionCardView(title: "原文") {
+                    VStack(alignment: .leading, spacing: Spacing.md) {
+                        if !viewModel.fragment.title.isEmpty {
+                            Text(viewModel.fragment.title)
+                                .font(Typography.headline)
+                                .foregroundColor(Colors.text)
+                        }
+
+                        Text(viewModel.fragment.body)
+                            .font(Typography.body)
                             .foregroundColor(Colors.text)
-                    }
+                            .lineSpacing(4)
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Text(viewModel.fragment.body)
-                        .font(Typography.body)
-                        .foregroundColor(Colors.text)
-                        .lineSpacing(4)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        HStack(spacing: Spacing.sm) {
+                            StatusBadgeView(status: viewModel.fragment.status)
+                            TypeBadgeView(type: viewModel.fragment.type)
+                            Spacer()
+                        }
 
-                    HStack(spacing: Spacing.sm) {
-                        StatusBadgeView(status: viewModel.fragment.status)
-                        TypeBadgeView(type: viewModel.fragment.type)
-                        Spacer()
-                    }
-
-                    if !viewModel.fragment.tags.isEmpty {
-                        FlowLayout(spacing: Spacing.sm) {
-                            ForEach(viewModel.fragment.tags, id: \.self) { tag in
-                                TagChipView(tag: tag)
+                        if !viewModel.fragment.tags.isEmpty {
+                            FlowLayout(spacing: Spacing.sm) {
+                                ForEach(viewModel.fragment.tags, id: \.self) { tag in
+                                    TagChipView(tag: tag)
+                                }
                             }
                         }
-                    }
 
-                    Text(viewModel.displayDateText)
-                        .font(Typography.caption2)
-                        .foregroundColor(Colors.textTertiary)
+                        Text(viewModel.displayDateText)
+                            .font(Typography.caption2)
+                            .foregroundColor(Colors.textTertiary)
+                    }
+                }
+
+                AIAnalysisSectionView(fragment: viewModel.fragment) {
+                    Task {
+                        await viewModel.reanalyzeFragment()
+                    }
                 }
             }
             .padding(Spacing.md)
         }
         .navigationTitle(viewModel.fragment.title.isEmpty ? "メモ" : viewModel.fragment.title)
         .navigationBarTitleDisplayMode(.inline)
+        .overlay(
+            LoadingOverlayView(isShowing: $viewModel.isLoading, message: "AIで整理中...")
+        )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    if viewModel.fragment.aiSummary != nil {
+                        Button {
+                            Task {
+                                await viewModel.reanalyzeFragment()
+                            }
+                        } label: {
+                            Label("再整理", systemImage: "sparkles")
+                        }
+                    }
+
                     Button {
                         showEditor = true
                     } label: {

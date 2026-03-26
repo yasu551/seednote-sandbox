@@ -44,26 +44,28 @@ class FragmentDetailViewModel: ObservableObject {
         }
     }
     
-    func reanalyzeFragment() {
+    func reanalyzeFragment() async {
+        guard !isLoading else { return }
+
         isLoading = true
-        
-        Task {
-            do {
-                let response = try await aiService.analyze(fragmentText: fragment.body)
-                
-                fragment.aiSummary = response.summary
-                fragment.aiQuestion = response.question
-                fragment.aiClaim = response.claim
-                fragment.aiImage = response.image
-                fragment.aiUseCases = response.useCases
-                fragment.typeRawValue = response.type.rawValue
-                
-                try repository.update(fragment)
-                isLoading = false
-            } catch {
-                print("Failed to reanalyze: \(error)")
-                isLoading = false
-            }
+
+        defer {
+            isLoading = false
+        }
+
+        do {
+            let response = try await aiService.analyze(fragmentText: fragment.body)
+
+            fragment.aiSummary = response.summary
+            fragment.aiQuestion = response.question
+            fragment.aiClaim = response.claim
+            fragment.aiImage = response.image
+            fragment.aiUseCases = response.useCases
+            fragment.typeRawValue = response.type.rawValue
+
+            try repository.update(fragment)
+        } catch {
+            print("Failed to reanalyze: \(error)")
         }
     }
     
