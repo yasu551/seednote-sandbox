@@ -3,11 +3,10 @@ import SwiftData
 
 struct FragmentDetailView: View {
     @State private var fragment: Fragment
-    @State private var viewModel: FragmentDetailViewModel
+    @StateObject private var viewModel: FragmentDetailViewModel
     @State private var showEditor = false
     @State private var selectedTemplate: TemplateType? = nil
     @State private var showDeleteConfirm = false
-    @State private var navigationPath: [Fragment] = []
     @Environment(\.dismiss) var dismiss
     
     private let repository: FragmentRepositoryProtocol
@@ -15,13 +14,13 @@ struct FragmentDetailView: View {
     
     init(fragment: Fragment, allFragments: [Fragment]) {
         let repository = SwiftDataFragmentRepository(
-            modelContext: ModelContext(AppRouter.shared.modelContainer)
+            modelContext: AppRouter.shared.modelContainer.mainContext
         )
         self.repository = repository
         self.allFragments = allFragments
         
         _fragment = State(initialValue: fragment)
-        _viewModel = State(initialValue: FragmentDetailViewModel(
+        _viewModel = StateObject(wrappedValue: FragmentDetailViewModel(
             fragment: fragment,
             repository: repository,
             aiService: AppRouter.shared.aiService,
@@ -31,9 +30,8 @@ struct FragmentDetailView: View {
     }
     
     var body: some View {
-        NavigationStack(path: $navigationPath) {
-            ScrollView {
-                VStack(spacing: Spacing.md) {
+        ScrollView {
+            VStack(spacing: Spacing.md) {
                     // Original Text Section
                     SectionCardView(title: "原文") {
                         VStack(alignment: .leading, spacing: Spacing.sm) {
@@ -143,56 +141,58 @@ struct FragmentDetailView: View {
                         }
                     }
                     .padding(Spacing.md)
-                }
             }
-            .navigationDestination(for: Fragment.self) { fragment in
-                FragmentDetailView(fragment: fragment, allFragments: allFragments)
+        }
+        .navigationDestination(for: Fragment.self) { frag in
+            FragmentDetailView(fragment: frag, allFragments: allFragments)
+        }
+        .navigationDestination(isPresented: Binding(
+            get: { selectedTemplate != nil },
+            set: { if !$0 { selectedTemplate = nil } }
+        )) {
+            if let template = selectedTemplate {
+                GeneratedDraftView(fragment: fragment, template: template)
             }
-            .navigationDestination(isPresented: Binding(
-                get: { selectedTemplate != nil },
-                set: { if !$0 { selectedTemplate = nil } }
-            )) {
-                if let template = selectedTemplate {
-                    GeneratedDraftView(fragment: fragment, template: template)
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button(action: { showEditor = true }) {
-                            Label("編集", systemImage: "pencil")
-                        }
-                        
-                        Button(action: {
-                            viewModel.reanalyzeFragment()
-                        }) {
-                            Label("再整理", systemImage: "sparkles")
-                        }
-                        
-                        Button(role: .destructive, action: { showDeleteConfirm = true }) {
-                            Label("削除", systemImage: "trash")
-                        }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .foregroundColor(Colors.primary)
+        }
+        .navigationTitle(fragment.title.isEmpty ? "メモ" : fragment.title)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Menu {
+                    Button(action: { showEditor = true }) {
+                        Label("編集", systemImage: "pencil")
                     }
-                }
-            }
-            .sheet(isPresented: $showEditor) {
-                FragmentEditorView(fragment: fragment)
-                    .presentationDetents([.medium, .large])
-            }
-            .alert("削除確認", isPresented: $showDeleteConfirm) {
-                Button(role: .cancel) { }
-                Button(role: .destructive) {
-                    viewModel.deleteFragment()
-                    dismiss()
+                    
+                    Button(action: { viewModel.reanalyzeFragment() }) {
+                        Label("再整理", systemImage: "sparkles")
+                    }
+                    
+                    Button(role: .destructive, action: { showDeleteConfirm = true }) {
+                        Label("削除", systemImage: "trash")
+                    }
                 } label: {
-                    Text("削除")
+                    Image(systemName: "ellipsis.circle")
+                        .foregroundColor(Colors.primary)
                 }
-            } message: {
-                Text("このメモを削除してよろしいですか？")
             }
+        }
+        .sheet(isPresented: $showEditor) {
+            FragmentEditorView(fragment: fragment)
+                .presentationDetents([.medium, .large])
+        }
+        .alert("削除確認", isPresented: $showDeleteConfirm) {
+            Button(role: .cancel) { }
+            Button(role: .destructive) {
+                viewModel.deleteFragment()
+                dismiss()
+            } label: {
+                Text("削除")
+            }
+        } message: {
+            Text("このメモを削除してよろしいですか？")
+        }
+        .overlay {
+            LoadingOverlayView(isShowing: $viewModel.isLoading, message: "AI で再整理中...")
         }
     }
 }

@@ -1,8 +1,8 @@
 import Foundation
 
 class UsageLimitService {
-    @Published private var analysisUsedCount: Int = 0
-    @Published private var templateUsedCount: Int = 0
+    private var analysisUsedCount: Int = 0
+    private var templateUsedCount: Int = 0
     
     private let maxAnalysisPerMonth = 10
     private let maxTemplatePerMonth = 5

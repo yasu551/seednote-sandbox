@@ -33,7 +33,7 @@ struct EmptyStateView: View {
             Text(message)
                 .font(Typography.body)
                 .foregroundColor(Colors.textSecondary)
-                .textAlignment(.center)
+                .multilineTextAlignment(.center)
             
             if let actionTitle = actionTitle, let action = action {
                 PrimaryButton(title: actionTitle, action: action)

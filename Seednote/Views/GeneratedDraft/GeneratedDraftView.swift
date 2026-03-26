@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct GeneratedDraftView: View {
-    @State private var viewModel: GeneratedDraftViewModel
+    @StateObject private var viewModel: GeneratedDraftViewModel
     @State private var editedContent: String = ""
     @State private var showSaveAlert = false
     @Environment(\.dismiss) var dismiss
@@ -16,11 +16,11 @@ struct GeneratedDraftView: View {
         self.template = template
         
         let repository = SwiftDataFragmentRepository(
-            modelContext: ModelContext(AppRouter.shared.modelContainer)
+            modelContext: AppRouter.shared.modelContainer.mainContext
         )
         self.repository = repository
         
-        _viewModel = State(initialValue: GeneratedDraftViewModel(
+        _viewModel = StateObject(wrappedValue: GeneratedDraftViewModel(
             fragment: fragment,
             template: template,
             aiService: AppRouter.shared.aiService,

@@ -11,7 +11,7 @@ struct HomeView: View {
     
     init() {
         let repository = SwiftDataFragmentRepository(
-            modelContext: ModelContext(AppRouter.shared.modelContainer)
+            modelContext: AppRouter.shared.modelContainer.mainContext
         )
         self.repository = repository
         _viewModel = StateObject(wrappedValue: HomeViewModel(repository: repository))
@@ -48,7 +48,7 @@ struct HomeView: View {
                         // Search Bar
                         SearchBarView(text: $viewModel.searchText, placeholder: "検索...")
                             .padding(Spacing.md)
-                            .onChange(of: viewModel.searchText) { _ in
+                            .onChange(of: viewModel.searchText) {
                                 viewModel.updateFilteredFragments()
                             }
                         
@@ -61,7 +61,7 @@ struct HomeView: View {
                         }
                         .pickerStyle(.segmented)
                         .padding(.horizontal, Spacing.md)
-                        .onChange(of: viewModel.selectedStatus) { _ in
+                        .onChange(of: viewModel.selectedStatus) {
                             viewModel.updateFilteredFragments()
                         }
                         

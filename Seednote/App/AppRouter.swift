@@ -5,7 +5,7 @@ class AppRouter {
     static let shared = AppRouter()
     
     lazy var repository: FragmentRepositoryProtocol = {
-        return SwiftDataFragmentRepository(modelContext: ModelContext(modelContainer))
+        return SwiftDataFragmentRepository(modelContext: modelContainer.mainContext)
     }()
     
     lazy var aiService: AIAnalysisServiceProtocol = {

@@ -3,7 +3,7 @@ import SwiftData
 
 @MainActor
 class GeneratedDraftViewModel: ObservableObject {
-    @Published var draft: GeneratedDraft
+    var draft: GeneratedDraft
     @Published var isLoading: Bool = false
     @Published var draftContent: String = ""
     

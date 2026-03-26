@@ -3,7 +3,7 @@ import SwiftData
 
 @MainActor
 class FragmentDetailViewModel: ObservableObject {
-    @Published var fragment: Fragment
+    var fragment: Fragment
     @Published var relatedFragments: [RelatedFragment] = []
     @Published var isLoading: Bool = false
     
