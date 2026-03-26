@@ -1,109 +1,59 @@
 import SwiftUI
-import SwiftData
 
 struct HomeView: View {
-    @StateObject private var viewModel: HomeViewModel
-    @State private var showEditor = false
+    @StateObject private var viewModel = HomeViewModel()
+    @State private var showAddSheet = false
     @State private var showSettings = false
-    @State private var navigationPath: [Fragment] = []
-    
-    private let repository: FragmentRepositoryProtocol
-    
-    init() {
-        let repository = SwiftDataFragmentRepository(
-            modelContext: AppRouter.shared.modelContainer.mainContext
-        )
-        self.repository = repository
-        _viewModel = StateObject(wrappedValue: HomeViewModel(repository: repository))
-    }
     
     var body: some View {
-        NavigationStack(path: $navigationPath) {
+        NavigationStack {
             VStack(spacing: 0) {
-                // Header
-                HStack {
-                    Button(action: { showSettings = true }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.title3)
-                            .foregroundColor(Colors.primary)
-                    }
-                    
-                    Text("Seednote")
-                        .font(Typography.title2)
-                        .fontWeight(.bold)
-                    
-                    Spacer()
-                    
-                    Button(action: { showEditor = true }) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title3)
-                            .foregroundColor(Colors.primary)
-                    }
-                }
-                .padding(Spacing.md)
-                .background(Colors.background)
-                
                 ScrollView {
                     VStack(spacing: Spacing.md) {
-                        // Search Bar
                         SearchBarView(text: $viewModel.searchText, placeholder: "検索...")
-                            .padding(Spacing.md)
-                            .onChange(of: viewModel.searchText) {
-                                viewModel.updateFilteredFragments()
-                            }
-                        
-                        // Filter Segment
-                        Picker("ステータス", selection: $viewModel.selectedStatus) {
-                            Text("すべて").tag(Optional<FragmentStatus>.none)
-                            ForEach(FragmentStatus.allCases, id: \.self) { status in
-                                Text(status.displayName).tag(Optional(status))
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.horizontal, Spacing.md)
-                        .onChange(of: viewModel.selectedStatus) {
-                            viewModel.updateFilteredFragments()
-                        }
-                        
-                        // Fragment List
-                        if viewModel.fragments.isEmpty {
-                            EmptyStateView(
-                                title: "メモがありません",
-                                message: "新しい断片メモを作成してください",
-                                actionTitle: "メモを作成",
-                                action: { showEditor = true }
-                            )
-                            .padding(Spacing.lg)
-                        } else {
-                            VStack(spacing: Spacing.md) {
-                                ForEach(viewModel.fragments, id: \.id) { fragment in
-                                    NavigationLink(value: fragment) {
-                                        FragmentCardView(fragment: fragment)
-                                    }
-                                    .foregroundColor(Colors.text)
-                                }
-                            }
-                            .padding(Spacing.md)
-                        }
+                        HomeFilterBar(selectedStatus: $viewModel.selectedStatus)
+                        FragmentListView(
+                            fragments: viewModel.fragments,
+                            onTapAdd: { showAddSheet = true }
+                        )
+                    }
+                    .padding(Spacing.md)
+                }
+            }
+            .navigationTitle("Seednote")
+            .navigationDestination(for: Fragment.self) { fragment in
+                HomePlaceholderView(
+                    title: fragment.title.isEmpty ? "断片詳細" : fragment.title
+                )
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAddSheet = true
+                    } label: {
+                        Image(systemName: "plus")
                     }
                 }
             }
-            .navigationDestination(for: Fragment.self) { fragment in
-                FragmentDetailView(
-                    fragment: fragment,
-                    allFragments: viewModel.fragments
-                )
-            }
-            .sheet(isPresented: $showEditor) {
-                FragmentEditorView()
-                    .presentationDetents([.medium, .large])
-                    .onDisappear {
-                        viewModel.loadFragments()
-                    }
+            .sheet(isPresented: $showAddSheet) {
+                HomePlaceholderView(title: "新規追加")
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView()
-                    .presentationDetents([.medium, .large])
+                HomePlaceholderView(title: "設定")
+            }
+            .onChange(of: viewModel.searchText) { _, _ in
+                viewModel.applyFilters()
+            }
+            .onChange(of: viewModel.selectedStatus) { _, _ in
+                viewModel.applyFilters()
             }
         }
     }
@@ -111,4 +61,38 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+}
+
+private struct HomePlaceholderView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let title: String
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: Spacing.md) {
+                Image(systemName: "hammer")
+                    .font(.system(size: 32))
+                    .foregroundColor(Colors.textSecondary)
+
+                Text("\(title) は仮画面です")
+                    .font(Typography.title3)
+
+                Text("TODO: 次のステップで本実装に差し替える")
+                    .font(Typography.footnote)
+                    .foregroundColor(Colors.textSecondary)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(Spacing.lg)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("閉じる") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
 }

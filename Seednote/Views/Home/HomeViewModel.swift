@@ -1,56 +1,33 @@
 import Foundation
-import SwiftData
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    @Published var fragments: [Fragment] = []
+    @Published var fragments: [Fragment]
     @Published var searchText: String = ""
     @Published var selectedStatus: FragmentStatus? = nil
-    
-    private var allFragments: [Fragment] = []
-    private let repository: FragmentRepositoryProtocol
-    
-    init(repository: FragmentRepositoryProtocol) {
-        self.repository = repository
-        loadFragments()
+
+    private let allFragments: [Fragment]
+
+    init(fragments: [Fragment] = PreviewData.sampleFragments) {
+        self.allFragments = fragments
+        self.fragments = fragments
     }
-    
-    var filteredFragments: [Fragment] {
+
+    func applyFilters() {
         var result = allFragments
-        
-        if let status = selectedStatus {
-            result = result.filter { $0.status == status }
+
+        if let selectedStatus {
+            result = result.filter { $0.status == selectedStatus }
         }
-        
-        if !searchText.isEmpty {
+
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !query.isEmpty {
             result = result.filter { fragment in
-                fragment.title.contains(searchText) || 
-                fragment.body.contains(searchText)
+                fragment.title.localizedCaseInsensitiveContains(query)
+                    || fragment.body.localizedCaseInsensitiveContains(query)
             }
         }
-        
-        return result
-    }
-    
-    func loadFragments() {
-        do {
-            allFragments = try repository.fetchAll()
-            fragments = filteredFragments
-        } catch {
-            print("Failed to load fragments: \(error)")
-        }
-    }
-    
-    func deleteFragment(_ fragment: Fragment) {
-        do {
-            try repository.delete(fragment)
-            loadFragments()
-        } catch {
-            print("Failed to delete fragment: \(error)")
-        }
-    }
-    
-    func updateFilteredFragments() {
-        fragments = filteredFragments
+
+        fragments = result
     }
 }

@@ -3,6 +3,57 @@ import Testing
 @testable import Seednote
 
 struct SeednoteTests {
+    @MainActor
+    @Test func HomeViewModelは初期状態でPreviewDataの断片一覧を保持する() {
+        let viewModel = HomeViewModel()
+
+        #expect(viewModel.fragments.count == PreviewData.sampleFragments.count)
+        #expect(viewModel.fragments.map(\.id) == PreviewData.sampleFragments.map(\.id))
+    }
+
+    @MainActor
+    @Test func HomeViewModelはステータスで断片を絞り込める() {
+        let viewModel = HomeViewModel()
+
+        viewModel.selectedStatus = .growing
+        viewModel.applyFilters()
+
+        #expect(viewModel.fragments.count == 1)
+        #expect(viewModel.fragments.first?.id == PreviewData.processedFragment.id)
+    }
+
+    @MainActor
+    @Test func HomeViewModelはタイトルと本文の両方を検索対象にする() {
+        let viewModel = HomeViewModel()
+
+        viewModel.searchText = "ナビゲーション"
+        viewModel.applyFilters()
+        let titleMatchedIDs = viewModel.fragments.map(\.id)
+
+        viewModel.searchText = "選び直したつながり"
+        viewModel.applyFilters()
+        let bodyMatchedIDs = viewModel.fragments.map(\.id)
+
+        #expect(titleMatchedIDs == [PreviewData.processedFragment.id])
+        #expect(bodyMatchedIDs == [PreviewData.usedFragment.id])
+    }
+
+    @Test func FragmentCardViewはタイトルを優先しsummaryは空なら表示しない() {
+        let titledView = FragmentCardView(fragment: PreviewData.processedFragment)
+        let untitledFragment = Fragment(
+            title: "",
+            body: "本文の冒頭を表示したい",
+            updatedAt: Date(timeIntervalSince1970: 1_710_000_000),
+            aiSummary: nil
+        )
+        let untitledView = FragmentCardView(fragment: untitledFragment)
+
+        #expect(titledView.displayTitle == PreviewData.processedFragment.title)
+        #expect(titledView.displaySummary == PreviewData.processedFragment.aiSummary)
+        #expect(untitledView.displayTitle == untitledFragment.body)
+        #expect(untitledView.displaySummary == nil)
+    }
+
     @Test func Fragmentの初期ステータスは未整理である() {
         let fragment = Fragment()
 
