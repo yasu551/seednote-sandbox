@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct SeednoteApp: App {
@@ -6,5 +7,6 @@ struct SeednoteApp: App {
         WindowGroup {
             RootView()
         }
+        .modelContainer(AppRouter.shared.modelContainer)
     }
 }

@@ -3,6 +3,10 @@ import SwiftData
 
 @MainActor
 class AppRouter {
+    enum Route: Hashable {
+        case home
+    }
+
     static let shared = AppRouter()
     
     lazy var repository: FragmentRepositoryProtocol = {
