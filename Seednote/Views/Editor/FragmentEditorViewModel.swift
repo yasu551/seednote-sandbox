@@ -29,6 +29,10 @@ class FragmentEditorViewModel: ObservableObject {
         !trimmedBody.isEmpty
     }
 
+    var isEditing: Bool {
+        existingFragment != nil
+    }
+
     var screenTitle: String {
         existingFragment == nil ? "新規作成" : "断片を編集"
     }

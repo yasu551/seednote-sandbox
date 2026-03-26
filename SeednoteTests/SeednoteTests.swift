@@ -1,8 +1,20 @@
 import Foundation
+import SwiftData
 import Testing
 @testable import Seednote
 
 struct SeednoteTests {
+    @MainActor
+    @Test func FragmentEditorViewModelは編集モードを判定できる() {
+        let existingFragment = Fragment(title: "既存", body: "本文")
+
+        let newViewModel = FragmentEditorViewModel()
+        let editingViewModel = FragmentEditorViewModel(fragment: existingFragment)
+
+        #expect(newViewModel.isEditing == false)
+        #expect(editingViewModel.isEditing == true)
+    }
+
     @MainActor
     @Test func FragmentEditorViewModelは本文が空白のみなら保存できない() {
         let viewModel = FragmentEditorViewModel()
@@ -65,11 +77,37 @@ struct SeednoteTests {
     }
 
     @MainActor
+    @Test func SwiftDataFragmentRepositoryは更新日時の降順で断片を取得できる() throws {
+        let container = try makeInMemoryModelContainer()
+        let repository = SwiftDataFragmentRepository(modelContext: container.mainContext)
+        let olderFragment = Fragment(
+            title: "古い更新",
+            body: "本文",
+            createdAt: Date(timeIntervalSince1970: 100),
+            updatedAt: Date(timeIntervalSince1970: 100)
+        )
+        let newerFragment = Fragment(
+            title: "新しい更新",
+            body: "本文",
+            createdAt: Date(timeIntervalSince1970: 50),
+            updatedAt: Date(timeIntervalSince1970: 200)
+        )
+
+        try repository.save(olderFragment)
+        try repository.save(newerFragment)
+
+        let fragments = try repository.fetchAll()
+
+        #expect(fragments.map(\.id) == [newerFragment.id, olderFragment.id])
+    }
+
+    @MainActor
     @Test func HomeViewModelは初期状態でPreviewDataの断片一覧を保持する() {
         let viewModel = HomeViewModel()
+        let fragments = viewModel.filteredFragments(from: PreviewData.sampleFragments)
 
-        #expect(viewModel.filteredFragments.count == PreviewData.sampleFragments.count)
-        #expect(viewModel.filteredFragments.map(\.id) == PreviewData.sampleFragments.map(\.id))
+        #expect(fragments.count == PreviewData.sampleFragments.count)
+        #expect(fragments.map(\.id) == PreviewData.sampleFragments.map(\.id))
     }
 
     @MainActor
@@ -77,10 +115,10 @@ struct SeednoteTests {
         let viewModel = HomeViewModel()
 
         viewModel.selectedFilter = .growing
-        viewModel.applyFilters()
+        let fragments = viewModel.filteredFragments(from: PreviewData.sampleFragments)
 
-        #expect(viewModel.filteredFragments.count == 1)
-        #expect(viewModel.filteredFragments.first?.id == PreviewData.processedFragment.id)
+        #expect(fragments.count == 1)
+        #expect(fragments.first?.id == PreviewData.processedFragment.id)
     }
 
     @MainActor
@@ -88,16 +126,13 @@ struct SeednoteTests {
         let viewModel = HomeViewModel()
 
         viewModel.searchText = "ナビゲーション"
-        viewModel.applyFilters()
-        let titleMatchedIDs = viewModel.filteredFragments.map(\.id)
+        let titleMatchedIDs = viewModel.filteredFragments(from: PreviewData.sampleFragments).map(\.id)
 
         viewModel.searchText = "選び直したつながり"
-        viewModel.applyFilters()
-        let bodyMatchedIDs = viewModel.filteredFragments.map(\.id)
+        let bodyMatchedIDs = viewModel.filteredFragments(from: PreviewData.sampleFragments).map(\.id)
 
         viewModel.searchText = "アプリ開発"
-        viewModel.applyFilters()
-        let tagMatchedIDs = viewModel.filteredFragments.map(\.id)
+        let tagMatchedIDs = viewModel.filteredFragments(from: PreviewData.sampleFragments).map(\.id)
 
         #expect(titleMatchedIDs == [PreviewData.processedFragment.id])
         #expect(bodyMatchedIDs == [PreviewData.usedFragment.id])
@@ -110,9 +145,9 @@ struct SeednoteTests {
 
         viewModel.selectedFilter = .used
         viewModel.searchText = "家族"
-        viewModel.applyFilters()
+        let fragments = viewModel.filteredFragments(from: PreviewData.sampleFragments)
 
-        #expect(viewModel.filteredFragments.map(\.id) == [PreviewData.usedFragment.id])
+        #expect(fragments.map(\.id) == [PreviewData.usedFragment.id])
     }
 
     @MainActor
@@ -121,21 +156,28 @@ struct SeednoteTests {
 
         viewModel.selectedFilter = .growing
         viewModel.searchText = "存在しない検索語"
-        viewModel.applyFilters()
+        let fragments = viewModel.filteredFragments(from: PreviewData.sampleFragments)
 
-        #expect(viewModel.filteredFragments.isEmpty)
+        #expect(fragments.isEmpty)
     }
 
     @MainActor
-    @Test func HomeViewModelは追加した断片を一覧の先頭に反映する() {
-        let existingFragment = Fragment(title: "既存", body: "既存本文")
-        let addedFragment = Fragment(title: "追加", body: "追加本文")
-        let viewModel = HomeViewModel(fragments: [existingFragment])
+    @Test func HomeViewModelは渡された断片一覧の順序を維持する() {
+        let olderFragment = Fragment(
+            title: "古い更新",
+            body: "本文",
+            updatedAt: Date(timeIntervalSince1970: 100)
+        )
+        let newerFragment = Fragment(
+            title: "新しい更新",
+            body: "本文",
+            updatedAt: Date(timeIntervalSince1970: 200)
+        )
+        let viewModel = HomeViewModel()
 
-        viewModel.addFragment(addedFragment)
+        let fragments = viewModel.filteredFragments(from: [newerFragment, olderFragment])
 
-        #expect(viewModel.filteredFragments.count == 2)
-        #expect(viewModel.filteredFragments.first?.id == addedFragment.id)
+        #expect(fragments.map(\.id) == [newerFragment.id, olderFragment.id])
     }
 
     @Test func FragmentCardViewはタイトルを優先しsummaryは空なら表示しない() {
@@ -213,4 +255,14 @@ struct SeednoteTests {
         #expect(FragmentType.question.displayName == "質問")
         #expect(TemplateType.essayOutline.displayName == "エッセイ骨子")
     }
+}
+
+@MainActor
+private func makeInMemoryModelContainer() throws -> ModelContainer {
+    let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+    return try ModelContainer(
+        for: Fragment.self,
+        GeneratedDraft.self,
+        configurations: configuration
+    )
 }

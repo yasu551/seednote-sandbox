@@ -1,11 +1,16 @@
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @Query(sort: [SortDescriptor(\Fragment.updatedAt, order: .reverse)])
+    private var fragments: [Fragment]
     @State private var showAddSheet = false
     @State private var showSettings = false
     
     var body: some View {
+        let filteredFragments = viewModel.filteredFragments(from: fragments)
+
         NavigationStack {
             VStack(spacing: 0) {
                 ScrollView {
@@ -13,14 +18,19 @@ struct HomeView: View {
                         SearchBarView(text: $viewModel.searchText, placeholder: "検索...")
                         HomeFilterBar(selectedFilter: $viewModel.selectedFilter)
 
-                        if viewModel.filteredFragments.isEmpty {
+                        if fragments.isEmpty {
+                            FragmentListView(
+                                fragments: [],
+                                onTapAdd: { showAddSheet = true }
+                            )
+                        } else if filteredFragments.isEmpty {
                             EmptyStateView(
                                 title: "該当する断片がありません",
                                 message: "検索条件またはステータスを変更してください。"
                             )
                         } else {
                             FragmentListView(
-                                fragments: viewModel.filteredFragments,
+                                fragments: filteredFragments,
                                 onTapAdd: { showAddSheet = true }
                             )
                         }
@@ -30,9 +40,7 @@ struct HomeView: View {
             }
             .navigationTitle("Seednote")
             .navigationDestination(for: Fragment.self) { fragment in
-                HomePlaceholderView(
-                    title: fragment.title.isEmpty ? "断片詳細" : fragment.title
-                )
+                FragmentDetailView(fragment: fragment, allFragments: fragments)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -52,19 +60,11 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showAddSheet) {
-                FragmentEditorView { fragment in
-                    viewModel.addFragment(fragment)
-                }
+                FragmentEditorView()
                 .presentationDetents([.large])
             }
             .sheet(isPresented: $showSettings) {
                 HomePlaceholderView(title: "設定")
-            }
-            .onChange(of: viewModel.searchText) { _, _ in
-                viewModel.applyFilters()
-            }
-            .onChange(of: viewModel.selectedFilter) { _, _ in
-                viewModel.applyFilters()
             }
         }
     }
@@ -72,6 +72,7 @@ struct HomeView: View {
 
 #Preview {
     HomeView()
+        .modelContainer(makeHomePreviewContainer())
 }
 
 private struct HomePlaceholderView: View {
@@ -106,4 +107,36 @@ private struct HomePlaceholderView: View {
             }
         }
     }
+}
+
+@MainActor
+private func makeHomePreviewContainer() -> ModelContainer {
+    let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Fragment.self,
+        GeneratedDraft.self,
+        configurations: configuration
+    )
+
+    PreviewData.sampleFragments.forEach { fragment in
+        container.mainContext.insert(
+            Fragment(
+                id: fragment.id,
+                title: fragment.title,
+                body: fragment.body,
+                createdAt: fragment.createdAt,
+                updatedAt: fragment.updatedAt,
+                statusRawValue: fragment.statusRawValue,
+                typeRawValue: fragment.typeRawValue,
+                tags: fragment.tags,
+                aiSummary: fragment.aiSummary,
+                aiQuestion: fragment.aiQuestion,
+                aiClaim: fragment.aiClaim,
+                aiImage: fragment.aiImage,
+                aiUseCases: fragment.aiUseCases
+            )
+        )
+    }
+
+    return container
 }

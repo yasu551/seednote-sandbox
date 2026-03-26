@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct FragmentEditorView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: FragmentEditorViewModel
 
     init(
@@ -81,9 +83,7 @@ struct FragmentEditorView: View {
                         PrimaryButton(
                             title: "保存してAI整理",
                             action: {
-                                if viewModel.saveAndAnalyze() != nil {
-                                    dismiss()
-                                }
+                                persist(viewModel.saveAndAnalyze())
                             },
                             disabled: !viewModel.canSave
                         )
@@ -91,9 +91,7 @@ struct FragmentEditorView: View {
                         SecondaryButton(
                             title: "保存",
                             action: {
-                                if viewModel.saveFragment() != nil {
-                                    dismiss()
-                                }
+                                persist(viewModel.saveFragment())
                             },
                             disabled: !viewModel.canSave
                         )
@@ -118,12 +116,43 @@ struct FragmentEditorView: View {
             }
         }
     }
+
+    private func persist(_ fragment: Fragment?) {
+        guard let fragment else {
+            return
+        }
+
+        let repository = FragmentRepository.make(modelContext: modelContext)
+
+        do {
+            if viewModel.isEditing {
+                try repository.update(fragment)
+            } else {
+                try repository.save(fragment)
+            }
+            dismiss()
+        } catch {
+            print("Failed to persist fragment: \(error)")
+        }
+    }
 }
 
 #Preview("新規作成") {
     FragmentEditorView()
+        .modelContainer(makeEditorPreviewContainer())
 }
 
 #Preview("編集") {
     FragmentEditorView(fragment: PreviewData.processedFragment)
+        .modelContainer(makeEditorPreviewContainer())
+}
+
+@MainActor
+private func makeEditorPreviewContainer() -> ModelContainer {
+    let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+    return try! ModelContainer(
+        for: Fragment.self,
+        GeneratedDraft.self,
+        configurations: configuration
+    )
 }

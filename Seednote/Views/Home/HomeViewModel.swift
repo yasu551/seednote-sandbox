@@ -4,27 +4,9 @@ import Foundation
 class HomeViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var selectedFilter: FragmentStatus? = nil
-    @Published var filteredFragments: [Fragment]
 
-    private var allFragments: [Fragment]
-
-    init(fragments: [Fragment] = PreviewData.sampleFragments) {
-        self.allFragments = fragments
-        self.filteredFragments = fragments
-    }
-
-    func addFragment(_ fragment: Fragment) {
-        if let index = allFragments.firstIndex(where: { $0.id == fragment.id }) {
-            allFragments[index] = fragment
-        } else {
-            allFragments.insert(fragment, at: 0)
-        }
-
-        applyFilters()
-    }
-
-    func applyFilters() {
-        var result = allFragments
+    func filteredFragments(from fragments: [Fragment]) -> [Fragment] {
+        var result = fragments
 
         if let selectedFilter {
             result = result.filter { $0.status == selectedFilter }
@@ -39,6 +21,6 @@ class HomeViewModel: ObservableObject {
             }
         }
 
-        filteredFragments = result
+        return result
     }
 }

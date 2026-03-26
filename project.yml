@@ -44,3 +44,13 @@ targets:
         SWIFT_VERSION: "5.9"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  SeednoteTests:
+    build:
+      targets:
+        Seednote: all
+        SeednoteTests: [test]
+    test:
+      targets:
+        - name: SeednoteTests

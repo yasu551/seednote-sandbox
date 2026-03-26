@@ -33,6 +33,7 @@
 		6E93F3A048C56B90FF4E02F4 /* FlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062EB268BFF4DCCCA88B0839 /* FlowLayout.swift */; };
 		71562A9C8B6A9FAD004041EA /* SwiftDataFragmentRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B577EAB19A02FDBB4C4D434 /* SwiftDataFragmentRepository.swift */; };
 		720EF9F786609A9599A99218 /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E3433C8398ADB353CF3B60 /* SearchBarView.swift */; };
+		72CE4076FBAA5E5509B12888 /* FragmentRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0561F8D89EDA59AE2910282 /* FragmentRepository.swift */; };
 		75DFA06BE7A08CCD85E7E747 /* FragmentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17111BA44402BF1BF6C07CF6 /* FragmentType.swift */; };
 		7D10D588266FD9FE5EE87780 /* RelatedFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D93586F1BDAC03756B2D2BB /* RelatedFragment.swift */; };
 		7E0736018E1AB49EEC3AE7BD /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17D16DE6E20DF9BB64D24CB5 /* Colors.swift */; };
@@ -124,6 +125,7 @@
 		DF391918D297C2815A627EB7 /* PromptBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptBuilder.swift; sourceTree = "<group>"; };
 		EB370434D25012D27A9B976E /* FragmentDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentDetailViewModel.swift; sourceTree = "<group>"; };
 		EFCED696E95F15B2BD16EB23 /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
+		F0561F8D89EDA59AE2910282 /* FragmentRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FragmentRepository.swift; sourceTree = "<group>"; };
 		F267947BBFDEC5644588619C /* ClipboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardService.swift; sourceTree = "<group>"; };
 		F298611B31BA0F9E9AB7F06C /* AIAnalysisResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAnalysisResponse.swift; sourceTree = "<group>"; };
 		F5E3433C8398ADB353CF3B60 /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 		CBF086FA9508BB0EA2C43038 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				F0561F8D89EDA59AE2910282 /* FragmentRepository.swift */,
 				D6FD6748A8A86806222C311C /* FragmentRepositoryProtocol.swift */,
 				4B577EAB19A02FDBB4C4D434 /* SwiftDataFragmentRepository.swift */,
 			);
@@ -455,6 +458,7 @@
 				37C66D6A0FBD10B0D7AE0929 /* FragmentEditorView.swift in Sources */,
 				9C6C39831C70C4CAE6881EBB /* FragmentEditorViewModel.swift in Sources */,
 				8374F11AE64AF6CDCE63C8D2 /* FragmentListView.swift in Sources */,
+				72CE4076FBAA5E5509B12888 /* FragmentRepository.swift in Sources */,
 				7E0E0CC2B4C46CD8921AC08B /* FragmentRepositoryProtocol.swift in Sources */,
 				4C9D11593A079FA6C54434B5 /* FragmentStatus.swift in Sources */,
 				75DFA06BE7A08CCD85E7E747 /* FragmentType.swift in Sources */,

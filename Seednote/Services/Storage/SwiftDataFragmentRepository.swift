@@ -10,7 +10,7 @@ class SwiftDataFragmentRepository: FragmentRepositoryProtocol {
     
     func fetchAll() throws -> [Fragment] {
         let descriptor = FetchDescriptor<Fragment>(sortBy: [
-            SortDescriptor(\.createdAt, order: .reverse)
+            SortDescriptor(\.updatedAt, order: .reverse)
         ])
         return try modelContext.fetch(descriptor)
     }
