@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GeneratedDraftView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: GeneratedDraftViewModel
 
     private let fragment: Fragment
@@ -37,12 +38,34 @@ struct GeneratedDraftView: View {
                 }
 
                 SectionCardView(title: "生成結果") {
-                    TextEditor(text: $viewModel.draftContent)
-                        .font(Typography.body)
-                        .frame(minHeight: 320)
-                        .padding(Spacing.sm)
-                        .background(Colors.surface)
-                        .cornerRadius(Spacing.cornerRadius)
+                    VStack(spacing: Spacing.md) {
+                        TextEditor(text: $viewModel.draftContent)
+                            .font(Typography.body)
+                            .frame(minHeight: 320)
+                            .padding(Spacing.sm)
+                            .background(Colors.surface)
+                            .cornerRadius(Spacing.cornerRadius)
+
+                        VStack(spacing: Spacing.md) {
+                            PrimaryButton(
+                                title: "新規メモとして保存",
+                                action: {
+                                    if viewModel.saveAsNewFragment() {
+                                        dismiss()
+                                    }
+                                },
+                                disabled: viewModel.draftContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            )
+
+                            SecondaryButton(
+                                title: "コピー",
+                                action: {
+                                    viewModel.copyToClipboard()
+                                },
+                                disabled: viewModel.draftContent.isEmpty
+                            )
+                        }
+                    }
                 }
             }
             .padding(Spacing.md)

@@ -271,6 +271,52 @@ struct SeednoteTests {
         #expect(viewModel.isLoading == false)
     }
 
+    @MainActor
+    @Test func GeneratedDraftViewModelは生成結果を新規Fragmentとして保存できる() {
+        let fragment = Fragment(
+            title: "種",
+            body: "朝の光で気分が少し変わった"
+        )
+        let repository = MockFragmentRepository()
+        let viewModel = GeneratedDraftViewModel(
+            fragment: fragment,
+            template: .essayOutline,
+            aiService: MockAIAnalysisService(),
+            repository: repository,
+            usageLimit: UsageLimitService()
+        )
+        viewModel.draftContent = "エッセイ骨子の下書き"
+
+        let result = viewModel.saveAsNewFragment()
+
+        #expect(result == true)
+        #expect(repository.savedFragment?.title == "[エッセイの骨子] 種")
+        #expect(repository.savedFragment?.body == "エッセイ骨子の下書き")
+        #expect(repository.savedFragment?.statusRawValue == FragmentStatus.unprocessed.rawValue)
+    }
+
+    @MainActor
+    @Test func GeneratedDraftViewModelは生成結果をクリップボードへコピーできる() {
+        let fragment = Fragment(
+            title: "種",
+            body: "朝の光で気分が少し変わった"
+        )
+        let clipboardService = MockClipboardService()
+        let viewModel = GeneratedDraftViewModel(
+            fragment: fragment,
+            template: .essayOutline,
+            aiService: MockAIAnalysisService(),
+            repository: MockFragmentRepository(),
+            usageLimit: UsageLimitService(),
+            clipboardService: clipboardService
+        )
+        viewModel.draftContent = "エッセイ骨子の下書き"
+
+        viewModel.copyToClipboard()
+
+        #expect(clipboardService.copiedText == "エッセイ骨子の下書き")
+    }
+
     @Test func RelatedFragmentServiceは自身を除外して関連度順の上位3件を返す() {
         let target = Fragment(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
@@ -539,13 +585,24 @@ private final class MockFragmentRepository: FragmentRepositoryProtocol {
     var fetchAllResult: [Fragment] = []
     private(set) var deletedFragment: Fragment?
     private(set) var updatedFragment: Fragment?
+    private(set) var savedFragment: Fragment?
 
     func fetchAll() throws -> [Fragment] { fetchAllResult }
-    func save(_ fragment: Fragment) throws {}
+    func save(_ fragment: Fragment) throws {
+        savedFragment = fragment
+    }
     func delete(_ fragment: Fragment) throws {
         deletedFragment = fragment
     }
     func update(_ fragment: Fragment) throws {
         updatedFragment = fragment
+    }
+}
+
+private final class MockClipboardService: ClipboardServiceProtocol {
+    private(set) var copiedText: String?
+
+    func copy(_ text: String) {
+        copiedText = text
     }
 }
