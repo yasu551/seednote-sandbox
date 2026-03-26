@@ -15,112 +15,78 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: Spacing.lg) {
-                    // Subscription Status
-                    SectionCardView(title: "プラン") {
+                    SectionCardView(title: "現在のプラン") {
                         VStack(alignment: .leading, spacing: Spacing.md) {
                             HStack {
                                 VStack(alignment: .leading, spacing: Spacing.xs) {
                                     Text(viewModel.subscriptionTier == .free ? "Free" : "Pro")
                                         .font(Typography.headline)
                                         .fontWeight(.bold)
-                                    
+
                                     Text(viewModel.subscriptionTier == .free ? "無料プラン" : "プレミアムプラン")
                                         .font(Typography.caption1)
                                         .foregroundColor(Colors.textSecondary)
                                 }
-                                
+
                                 Spacer()
-                                
+
                                 if viewModel.subscriptionTier == .free {
-                                    Button(action: {}) {
-                                        Text("Pro に加入")
-                                            .font(Typography.caption1)
-                                            .fontWeight(.semibold)
-                                            .foregroundColor(.white)
-                                            .padding(.horizontal, Spacing.md)
-                                            .padding(.vertical, Spacing.sm)
-                                            .background(Colors.primary)
-                                            .cornerRadius(6)
+                                    PrimaryButton(title: "Pro を購入") {
+                                        Task {
+                                            await viewModel.purchasePro()
+                                        }
                                     }
                                 }
                             }
+
+                            SecondaryButton(title: "購入を復元") {
+                                Task {
+                                    await viewModel.restorePurchases()
+                                }
+                            }
                         }
                     }
                     .padding(Spacing.md)
-                    
-                    // Usage Limits
-                    SectionCardView(title: "今月の使用状況") {
+
+                    SectionCardView(title: "利用回数") {
                         VStack(spacing: Spacing.md) {
-                            HStack {
-                                VStack(alignment: .leading, spacing: Spacing.xs) {
-                                    Text("AI 整理")
-                                        .font(Typography.subheadline)
-                                    
-                                    ProgressView(
-                                        value: Double(10 - viewModel.analysisRemaining),
-                                        total: 10
-                                    )
-                                    .tint(Colors.primary)
-                                    
-                                    Text("残り: \(viewModel.analysisRemaining) 回")
-                                        .font(Typography.caption2)
-                                        .foregroundColor(Colors.textSecondary)
-                                }
-                                
+                            HStack(alignment: .firstTextBaseline) {
+                                Text("AI整理の残回数")
+                                    .font(Typography.subheadline)
                                 Spacer()
+                                Text("\(viewModel.analysisRemaining) 回")
+                                    .font(Typography.subheadline)
+                                    .fontWeight(.semibold)
                             }
-                            
+
                             Divider()
-                            
-                            HStack {
-                                VStack(alignment: .leading, spacing: Spacing.xs) {
-                                    Text("再利用生成")
-                                        .font(Typography.subheadline)
-                                    
-                                    ProgressView(
-                                        value: Double(5 - viewModel.templateRemaining),
-                                        total: 5
-                                    )
-                                    .tint(Colors.success)
-                                    
-                                    Text("残り: \(viewModel.templateRemaining) 回")
-                                        .font(Typography.caption2)
-                                        .foregroundColor(Colors.textSecondary)
-                                }
-                                
+
+                            HStack(alignment: .firstTextBaseline) {
+                                Text("再利用の残回数")
+                                    .font(Typography.subheadline)
                                 Spacer()
+                                Text("\(viewModel.templateRemaining) 回")
+                                    .font(Typography.subheadline)
+                                    .fontWeight(.semibold)
                             }
                         }
                     }
                     .padding(Spacing.md)
-                    
-                    // Links
+
                     SectionCardView(title: "サポート") {
                         VStack(spacing: Spacing.md) {
                             Button(action: {}) {
                                 HStack {
-                                    Text("利用規約")
+                                    Text("規約")
                                         .foregroundColor(Colors.text)
                                     Spacer()
                                     Image(systemName: "arrow.up.right")
                                         .foregroundColor(Colors.primary)
                                 }
                             }
-                            
+
                             Divider()
-                            
-                            Button(action: {}) {
-                                HStack {
-                                    Text("プライバシーポリシー")
-                                        .foregroundColor(Colors.text)
-                                    Spacer()
-                                    Image(systemName: "arrow.up.right")
-                                        .foregroundColor(Colors.primary)
-                                }
-                            }
-                            
-                            Divider()
-                            
+
                             Button(action: {}) {
                                 HStack {
                                     Text("お問い合わせ")

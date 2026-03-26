@@ -64,7 +64,8 @@ struct HomeView: View {
                 .presentationDetents([.large])
             }
             .sheet(isPresented: $showSettings) {
-                HomePlaceholderView(title: "設定")
+                SettingsView()
+                    .presentationDetents([.large])
             }
         }
     }
@@ -73,40 +74,6 @@ struct HomeView: View {
 #Preview {
     HomeView()
         .modelContainer(makeHomePreviewContainer())
-}
-
-private struct HomePlaceholderView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    let title: String
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: Spacing.md) {
-                Image(systemName: "hammer")
-                    .font(.system(size: 32))
-                    .foregroundColor(Colors.textSecondary)
-
-                Text("\(title) は仮画面です")
-                    .font(Typography.title3)
-
-                Text("TODO: 次のステップで本実装に差し替える")
-                    .font(Typography.footnote)
-                    .foregroundColor(Colors.textSecondary)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(Spacing.lg)
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("閉じる") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
 }
 
 @MainActor

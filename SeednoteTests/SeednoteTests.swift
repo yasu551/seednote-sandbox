@@ -5,6 +5,18 @@ import Testing
 
 struct SeednoteTests {
     @MainActor
+    @Test func SettingsViewModelはFreeプランと残回数の初期表示値を提供する() {
+        let viewModel = SettingsViewModel(
+            subscriptionService: SettingsTestSubscriptionService(),
+            usageLimitService: UsageLimitService()
+        )
+
+        #expect(viewModel.subscriptionTier == .free)
+        #expect(viewModel.analysisRemaining == 10)
+        #expect(viewModel.templateRemaining == 5)
+    }
+
+    @MainActor
     @Test func FragmentEditorViewModelは編集モードを判定できる() {
         let existingFragment = Fragment(title: "既存", body: "本文")
 
@@ -605,4 +617,12 @@ private final class MockClipboardService: ClipboardServiceProtocol {
     func copy(_ text: String) {
         copiedText = text
     }
+}
+
+private struct SettingsTestSubscriptionService: SubscriptionServiceProtocol {
+    let currentTier: SubscriptionTier = .free
+
+    func restorePurchases() async {}
+
+    func purchasePro() async {}
 }

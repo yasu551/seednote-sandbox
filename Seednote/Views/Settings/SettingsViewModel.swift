@@ -19,4 +19,12 @@ class SettingsViewModel: ObservableObject {
         self.analysisRemaining = usageLimitService.analysisRemaining()
         self.templateRemaining = usageLimitService.templateRemaining()
     }
+
+    func purchasePro() async {
+        await subscriptionService.purchasePro()
+    }
+
+    func restorePurchases() async {
+        await subscriptionService.restorePurchases()
+    }
 }

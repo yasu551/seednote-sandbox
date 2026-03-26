@@ -7,7 +7,7 @@ class SubscriptionService: SubscriptionServiceProtocol {
         // スタブ: 本実装不要
     }
     
-    func startFreeTrial() async {
+    func purchasePro() async {
         // スタブ: 本実装不要
     }
 }

@@ -8,5 +8,5 @@ enum SubscriptionTier {
 protocol SubscriptionServiceProtocol {
     var currentTier: SubscriptionTier { get }
     func restorePurchases() async
-    func startFreeTrial() async
+    func purchasePro() async
 }
