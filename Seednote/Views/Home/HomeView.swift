@@ -40,7 +40,7 @@ struct HomeView: View {
             }
             .navigationTitle("Seednote")
             .navigationDestination(for: Fragment.self) { fragment in
-                FragmentDetailView(fragment: fragment, allFragments: fragments)
+                FragmentDetailView(fragment: fragment)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

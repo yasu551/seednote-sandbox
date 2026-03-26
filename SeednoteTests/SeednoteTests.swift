@@ -77,6 +77,80 @@ struct SeednoteTests {
     }
 
     @MainActor
+    @Test func FragmentDetailViewModelは編集後の断片を反映できる() {
+        let fragment = Fragment(
+            title: "編集前タイトル",
+            body: "編集前本文"
+        )
+        let editedFragment = Fragment(
+            id: fragment.id,
+            title: "編集後タイトル",
+            body: "編集後本文",
+            updatedAt: Date(timeIntervalSince1970: 200),
+            statusRawValue: FragmentStatus.growing.rawValue,
+            typeRawValue: FragmentType.idea.rawValue,
+            tags: ["再考", "メモ"]
+        )
+        let viewModel = FragmentDetailViewModel(
+            fragment: fragment,
+            repository: MockFragmentRepository(),
+            aiService: MockAIAnalysisService(),
+            relatedService: RelatedFragmentService(),
+            allFragments: []
+        )
+
+        viewModel.applyEditedFragment(editedFragment)
+
+        #expect(viewModel.fragment.title == "編集後タイトル")
+        #expect(viewModel.fragment.body == "編集後本文")
+        #expect(viewModel.fragment.status == .growing)
+        #expect(viewModel.fragment.type == .idea)
+        #expect(viewModel.fragment.tags == ["再考", "メモ"])
+    }
+
+    @MainActor
+    @Test func FragmentDetailViewModelは更新日時を表示用文字列にできる() {
+        let updatedAt = Date(timeIntervalSince1970: 1_710_090_000)
+        let fragment = Fragment(
+            title: "タイトル",
+            body: "本文",
+            updatedAt: updatedAt
+        )
+        let viewModel = FragmentDetailViewModel(
+            fragment: fragment,
+            repository: MockFragmentRepository(),
+            aiService: MockAIAnalysisService(),
+            relatedService: RelatedFragmentService(),
+            allFragments: []
+        )
+
+        let text = viewModel.displayDateText
+
+        #expect(text == updatedAt.formattedShort())
+    }
+
+    @MainActor
+    @Test func FragmentDetailViewModelは削除成功時にtrueを返す() {
+        let fragment = Fragment(
+            title: "削除対象",
+            body: "本文"
+        )
+        let repository = MockFragmentRepository()
+        let viewModel = FragmentDetailViewModel(
+            fragment: fragment,
+            repository: repository,
+            aiService: MockAIAnalysisService(),
+            relatedService: RelatedFragmentService(),
+            allFragments: []
+        )
+
+        let result = viewModel.deleteFragment()
+
+        #expect(result == true)
+        #expect(repository.deletedFragment?.id == fragment.id)
+    }
+
+    @MainActor
     @Test func SwiftDataFragmentRepositoryは更新日時の降順で断片を取得できる() throws {
         let container = try makeInMemoryModelContainer()
         let repository = SwiftDataFragmentRepository(modelContext: container.mainContext)
@@ -265,4 +339,15 @@ private func makeInMemoryModelContainer() throws -> ModelContainer {
         GeneratedDraft.self,
         configurations: configuration
     )
+}
+
+private final class MockFragmentRepository: FragmentRepositoryProtocol {
+    private(set) var deletedFragment: Fragment?
+
+    func fetchAll() throws -> [Fragment] { [] }
+    func save(_ fragment: Fragment) throws {}
+    func delete(_ fragment: Fragment) throws {
+        deletedFragment = fragment
+    }
+    func update(_ fragment: Fragment) throws {}
 }

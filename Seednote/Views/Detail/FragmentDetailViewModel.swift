@@ -3,7 +3,7 @@ import SwiftData
 
 @MainActor
 class FragmentDetailViewModel: ObservableObject {
-    var fragment: Fragment
+    @Published var fragment: Fragment
     @Published var relatedFragments: [RelatedFragment] = []
     @Published var isLoading: Bool = false
     
@@ -25,6 +25,14 @@ class FragmentDetailViewModel: ObservableObject {
         self.relatedService = relatedService
         self.allFragments = allFragments
         self.relatedFragments = relatedService.relatedFragments(for: fragment, from: allFragments)
+    }
+
+    var displayDateText: String {
+        fragment.updatedAt.formattedShort()
+    }
+
+    func applyEditedFragment(_ editedFragment: Fragment) {
+        fragment = editedFragment
     }
     
     func updateStatus(_ status: FragmentStatus) {
@@ -59,11 +67,13 @@ class FragmentDetailViewModel: ObservableObject {
         }
     }
     
-    func deleteFragment() {
+    func deleteFragment() -> Bool {
         do {
             try repository.delete(fragment)
+            return true
         } catch {
             print("Failed to delete fragment: \(error)")
+            return false
         }
     }
 }
