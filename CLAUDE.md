@@ -18,6 +18,26 @@
 xcodegen generate
 ```
 
+### 標準ビルド確認コマンド
+
+この repo では CLI のビルド確認に以下を標準とする。
+
+```bash
+xcodebuild \
+  -project Seednote.xcodeproj \
+  -scheme SeednoteTests \
+  -destination 'generic/platform=iOS' \
+  -derivedDataPath /tmp/seednote-derived \
+  CODE_SIGNING_ALLOWED=NO \
+  build
+```
+
+- 共有されている scheme は現状 `SeednoteTests`
+- `SeednoteTests` scheme の build で依存先の `Seednote` app target もビルドされる
+- `DerivedData` は `~/Library/Developer/Xcode/DerivedData` ではなく `/tmp/seednote-derived` を使う
+- 変なキャッシュ疑いがあるときは `-derivedDataPath /tmp/seednote-derived-clean clean build` を使う
+- Swift macro / `#Preview` / SwiftData `@Model` を含むため、CLI 検証は sandbox 外か Xcode 上を優先する
+
 XcodeBuildMCP ツールを使ってビルド・テストを行う:
 
 ```
