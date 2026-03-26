@@ -1,39 +1,54 @@
 import SwiftUI
 
 struct UsageLimitBanner: View {
-    let remaining: Int
-    let type: String
+    let title: String
+    let message: String
+    
+    init(title: String, message: String) {
+        self.title = title
+        self.message = message
+    }
+    
+    init(remaining: Int, type: String) {
+        self.title = "AI\(type)の残りは \(remaining) 回です"
+        self.message = "必要に応じて使用回数を確認してください。"
+    }
     
     var body: some View {
-        if remaining < 3 {
-            HStack(spacing: Spacing.md) {
-                Image(systemName: "exclamationmark.circle.fill")
-                    .foregroundColor(Colors.warning)
+        HStack(alignment: .top, spacing: Spacing.md) {
+            Image(systemName: "exclamationmark.circle")
+                .foregroundColor(Colors.warning)
+                .font(.system(size: 18, weight: .medium))
+            
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                Text(title)
+                    .font(Typography.subheadline)
+                    .foregroundColor(Colors.text)
                 
-                VStack(alignment: .leading, spacing: Spacing.xs) {
-                    Text("AI\(type)の残数:\(remaining)回")
-                        .font(Typography.subheadline)
-                        .fontWeight(.semibold)
-                    
-                    Text("Pro に加入して無制限に")
-                        .font(Typography.caption1)
-                        .foregroundColor(Colors.textSecondary)
-                }
-                
-                Spacer()
+                Text(message)
+                    .font(Typography.caption1)
+                    .foregroundColor(Colors.textSecondary)
             }
-            .padding(Spacing.md)
-            .background(Color.orange.opacity(0.1))
-            .cornerRadius(Spacing.cornerRadius)
-            .overlay(
-                RoundedRectangle(cornerRadius: Spacing.cornerRadius)
-                    .stroke(Colors.warning, lineWidth: 1)
-            )
+            
+            Spacer(minLength: 0)
         }
+        .padding(Spacing.md)
+        .background(Colors.warning.opacity(0.10))
+        .overlay {
+            RoundedRectangle(cornerRadius: Spacing.cornerRadius, style: .continuous)
+                .stroke(Colors.warning.opacity(0.35), lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: Spacing.cornerRadius, style: .continuous))
     }
 }
 
 #Preview {
-    UsageLimitBanner(remaining: 2, type: "整理")
-        .padding()
+    VStack(spacing: Spacing.md) {
+        UsageLimitBanner(
+            title: "AI整理の上限に近づいています",
+            message: "今月の残り回数を確認してください。"
+        )
+        UsageLimitBanner(remaining: 2, type: "整理")
+    }
+    .padding()
 }

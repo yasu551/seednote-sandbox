@@ -7,7 +7,7 @@ struct LoadingOverlayView: View {
     var body: some View {
         if isShowing {
             ZStack {
-                Color.black.opacity(0.3)
+                Color.black.opacity(0.18)
                     .ignoresSafeArea()
                 
                 VStack(spacing: Spacing.md) {
@@ -18,15 +18,25 @@ struct LoadingOverlayView: View {
                         .font(Typography.body)
                         .foregroundColor(Colors.text)
                 }
+                .frame(maxWidth: 240)
+                .cardStyle()
                 .padding(Spacing.lg)
-                .background(Colors.surface)
-                .cornerRadius(Spacing.cornerRadius)
             }
         }
     }
 }
 
 #Preview {
-    @State var isShowing = true
-    return LoadingOverlayView(isShowing: $isShowing, message: "AI で整理中...")
+    LoadingOverlayPreview()
+}
+
+private struct LoadingOverlayPreview: View {
+    @State private var isShowing = true
+    
+    var body: some View {
+        ZStack {
+            Colors.background
+            LoadingOverlayView(isShowing: $isShowing, message: "AI で整理中...")
+        }
+    }
 }

@@ -9,22 +9,26 @@ struct SecondaryButton: View {
         Button(action: action) {
             Text(title)
                 .font(Typography.headline)
-                .foregroundColor(Colors.primary)
+                .foregroundColor(Colors.text)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(Colors.background)
+                .overlay {
+                    RoundedRectangle(cornerRadius: Spacing.cornerRadius, style: .continuous)
+                        .stroke(Colors.divider, lineWidth: 1)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: Spacing.cornerRadius, style: .continuous))
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 48)
-        .background(Colors.surface)
-        .cornerRadius(Spacing.cornerRadius)
-        .overlay(
-            RoundedRectangle(cornerRadius: Spacing.cornerRadius)
-                .stroke(Colors.primary, lineWidth: 1.5)
-        )
         .opacity(disabled ? 0.5 : 1.0)
         .disabled(disabled)
+        .buttonStyle(.plain)
         .padding(.horizontal, Spacing.md)
     }
 }
 
 #Preview {
-    SecondaryButton(title: "キャンセル", action: {})
+    VStack(spacing: Spacing.md) {
+        SecondaryButton(title: "キャンセル", action: {})
+        SecondaryButton(title: "キャンセル", action: {}, disabled: true)
+    }
 }

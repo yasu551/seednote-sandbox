@@ -8,7 +8,7 @@ struct EmptyStateView: View {
     let action: (() -> Void)?
     
     init(
-        icon: String = "📝",
+        icon: String = "tray",
         title: String,
         message: String,
         actionTitle: String? = nil,
@@ -22,22 +22,26 @@ struct EmptyStateView: View {
     }
     
     var body: some View {
-        VStack(spacing: Spacing.lg) {
-            Text(icon)
-                .font(.system(size: 64))
+        VStack(spacing: Spacing.md) {
+            Image(systemName: icon)
+                .font(.system(size: 36, weight: .regular))
+                .foregroundColor(Colors.textSecondary)
+                .frame(width: 64, height: 64)
+                .background(Colors.surface)
+                .clipShape(RoundedRectangle(cornerRadius: Spacing.cornerRadius, style: .continuous))
             
             Text(title)
-                .font(Typography.title2)
+                .font(Typography.title3)
                 .foregroundColor(Colors.text)
             
             Text(message)
-                .font(Typography.body)
+                .font(Typography.footnote)
                 .foregroundColor(Colors.textSecondary)
                 .multilineTextAlignment(.center)
             
             if let actionTitle = actionTitle, let action = action {
                 PrimaryButton(title: actionTitle, action: action)
-                    .padding(.top, Spacing.md)
+                    .padding(.top, Spacing.sm)
             }
         }
         .padding(Spacing.lg)
@@ -47,6 +51,7 @@ struct EmptyStateView: View {
 
 #Preview {
     EmptyStateView(
+        icon: "tray",
         title: "メモがありません",
         message: "新しい断片メモを作成してください",
         actionTitle: "メモを作成",

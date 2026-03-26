@@ -9,22 +9,25 @@ struct TagChipView: View {
         HStack(spacing: Spacing.xs) {
             Text(tag)
                 .font(Typography.caption1)
+                .foregroundColor(Colors.text)
             
             if isRemovable {
                 Button(action: { onRemove?() }) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.caption)
+                        .foregroundColor(Colors.textSecondary)
                 }
+                .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, Spacing.sm)
-        .padding(.vertical, Spacing.xs)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
         .background(Colors.surface)
-        .cornerRadius(6)
-        .overlay(
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(Colors.divider, lineWidth: 0.5)
-        )
+        .overlay {
+            Capsule()
+                .stroke(Colors.divider, lineWidth: 0.8)
+        }
+        .clipShape(Capsule())
     }
 }
 
