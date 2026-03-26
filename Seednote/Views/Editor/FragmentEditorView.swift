@@ -5,6 +5,7 @@ struct FragmentEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: FragmentEditorViewModel
+    @State private var errorMessage: String?
 
     init(
         fragment: Fragment? = nil,
@@ -83,9 +84,12 @@ struct FragmentEditorView: View {
                         PrimaryButton(
                             title: "保存してAI整理",
                             action: {
-                                persist(viewModel.saveAndAnalyze())
+                                Task {
+                                    await persistAndAnalyze()
+                                }
                             },
-                            disabled: !viewModel.canSave
+                            isLoading: viewModel.isLoading,
+                            disabled: !viewModel.canSave || viewModel.isLoading
                         )
 
                         SecondaryButton(
@@ -93,12 +97,13 @@ struct FragmentEditorView: View {
                             action: {
                                 persist(viewModel.saveFragment())
                             },
-                            disabled: !viewModel.canSave
+                            disabled: !viewModel.canSave || viewModel.isLoading
                         )
 
                         SecondaryButton(
                             title: "キャンセル",
-                            action: { dismiss() }
+                            action: { dismiss() },
+                            disabled: viewModel.isLoading
                         )
                     }
                     .padding(.top, Spacing.md)
@@ -112,7 +117,15 @@ struct FragmentEditorView: View {
                     Button("キャンセル") {
                         dismiss()
                     }
+                    .disabled(viewModel.isLoading)
                 }
+            }
+            .alert("エラー", isPresented: isShowingError) {
+                Button("閉じる", role: .cancel) {
+                    errorMessage = nil
+                }
+            } message: {
+                Text(errorMessage ?? "")
             }
         }
     }
@@ -125,15 +138,58 @@ struct FragmentEditorView: View {
         let repository = FragmentRepository.make(modelContext: modelContext)
 
         do {
-            if viewModel.isEditing {
+            if viewModel.shouldUpdatePersistedFragment {
                 try repository.update(fragment)
             } else {
                 try repository.save(fragment)
+                viewModel.markAsPersisted()
             }
             dismiss()
         } catch {
+            errorMessage = "保存に失敗しました"
             print("Failed to persist fragment: \(error)")
         }
+    }
+
+    private func persistAndAnalyze() async {
+        guard let fragment = viewModel.saveFragment() else {
+            return
+        }
+
+        let repository = FragmentRepository.make(modelContext: modelContext)
+
+        do {
+            if viewModel.shouldUpdatePersistedFragment {
+                try repository.update(fragment)
+            } else {
+                try repository.save(fragment)
+                viewModel.markAsPersisted()
+            }
+        } catch {
+            errorMessage = "保存に失敗しました"
+            print("Failed to persist fragment before analyze: \(error)")
+            return
+        }
+
+        do {
+            try await viewModel.analyzeFragment(fragment)
+            try repository.update(fragment)
+            dismiss()
+        } catch {
+            errorMessage = "AI整理に失敗しました"
+            print("Failed to analyze fragment: \(error)")
+        }
+    }
+
+    private var isShowingError: Binding<Bool> {
+        Binding(
+            get: { errorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    errorMessage = nil
+                }
+            }
+        )
     }
 }
 

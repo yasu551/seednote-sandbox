@@ -77,6 +77,29 @@ struct SeednoteTests {
     }
 
     @MainActor
+    @Test func FragmentEditorViewModelは保存済み断片にAI整理結果を反映し再試行でも同じ断片を使う() async throws {
+        let viewModel = FragmentEditorViewModel(
+            aiService: MockAIAnalysisService()
+        )
+        viewModel.title = "問い"
+        viewModel.body = "なぜこの違和感を毎回見逃してしまうのか？"
+        viewModel.tagInput = "観察, 問い"
+
+        let savedFragment = viewModel.saveFragment()
+        try await viewModel.analyzeFragment(savedFragment!)
+        let retriedFragment = viewModel.saveFragment()
+
+        #expect(savedFragment?.aiSummary?.isEmpty == false)
+        #expect(savedFragment?.aiQuestion?.isEmpty == false)
+        #expect(savedFragment?.aiClaim?.isEmpty == false)
+        #expect(savedFragment?.aiImage == "❓")
+        #expect(savedFragment?.aiUseCases.count == 3)
+        #expect(savedFragment?.type == .question)
+        #expect(viewModel.isLoading == false)
+        #expect(retriedFragment?.id == savedFragment?.id)
+    }
+
+    @MainActor
     @Test func FragmentDetailViewModelは編集後の断片を反映できる() {
         let fragment = Fragment(
             title: "編集前タイトル",
