@@ -200,6 +200,16 @@ struct FragmentEditorView: View {
 
 #Preview("新規作成") {
     FragmentEditorView()
+        .modelContainer(for: Fragment.self, inMemory: true)
+}
+
+#Preview("編集") {
+    FragmentEditorView(fragment: PreviewData.processedFragment)
+        .modelContainer(for: Fragment.self, inMemory: true)
+}
+
+#Preview("新規作成") {
+    FragmentEditorView()
         .modelContainer(makeEditorPreviewContainer())
 }
 

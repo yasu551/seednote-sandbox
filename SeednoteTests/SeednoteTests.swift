@@ -738,3 +738,65 @@ private struct SettingsTestSubscriptionService: SubscriptionServiceProtocol {
 
     func purchasePro() async {}
 }
+
+// MARK: - Utils Tests
+
+struct StringExtTests {
+    @Test func summarizedは指定文字数を超える文字列を省略記号付きで切り詰める() {
+        let long = "あいうえおかきくけこさしすせそ"
+        #expect(long.summarized(maxLength: 5) == "あいうえお…")
+    }
+
+    @Test func summarizedは指定文字数以下の文字列をそのまま返す() {
+        let short = "短い"
+        #expect(short.summarized(maxLength: 10) == "短い")
+    }
+
+    @Test func summarizedはちょうど指定文字数の文字列をそのまま返す() {
+        let exact = "12345"
+        #expect(exact.summarized(maxLength: 5) == "12345")
+    }
+
+    @Test func summarizedは空文字列をそのまま返す() {
+        #expect("".summarized(maxLength: 5) == "")
+    }
+}
+
+struct DateExtTests {
+    @Test func relativeFormattedは今日の日付に対して相対表現を返す() {
+        let now = Date()
+        let result = now.relativeFormatted()
+        // RelativeDateTimeFormatter は "0秒前" や "たった今" 等を返す
+        #expect(!result.isEmpty)
+    }
+
+    @Test func relativeFormattedは過去の日付に対して空でない文字列を返す() {
+        let threeDaysAgo = Calendar.current.date(byAdding: .day, value: -3, to: Date())!
+        let result = threeDaysAgo.relativeFormatted()
+        #expect(!result.isEmpty)
+    }
+}
+
+// MARK: - DesignSystem Tests
+
+struct SpacingTests {
+    @Test func Spacingにカード用のdividerWidthが定義されている() {
+        #expect(Spacing.dividerWidth == 0.5)
+    }
+
+    @Test func SpacingにborderWidthが定義されている() {
+        #expect(Spacing.borderWidth == 1.0)
+    }
+
+    @Test func SpacingにバッジのpaddinHが定義されている() {
+        #expect(Spacing.badgePaddingH == 10.0)
+    }
+
+    @Test func SpacingにバッジのpaddingVが定義されている() {
+        #expect(Spacing.badgePaddingV == 6.0)
+    }
+
+    @Test func SpacingにボタンのbuttonHeightが定義されている() {
+        #expect(Spacing.buttonHeight == 48.0)
+    }
+}

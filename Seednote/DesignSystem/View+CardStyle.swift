@@ -8,7 +8,7 @@ extension View {
             .cornerRadius(Spacing.cornerRadius)
             .overlay(
                 RoundedRectangle(cornerRadius: Spacing.cornerRadius)
-                    .stroke(Colors.divider, lineWidth: 0.5)
+                    .stroke(Colors.divider, lineWidth: Spacing.dividerWidth)
             )
     }
 }

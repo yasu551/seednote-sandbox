@@ -9,4 +9,9 @@ struct Spacing {
     static let xxl: CGFloat = 48
     
     static let cornerRadius: CGFloat = 12
+    static let borderWidth: CGFloat = 1
+    static let dividerWidth: CGFloat = 0.5
+    static let badgePaddingH: CGFloat = 10
+    static let badgePaddingV: CGFloat = 6
+    static let buttonHeight: CGFloat = 48
 }

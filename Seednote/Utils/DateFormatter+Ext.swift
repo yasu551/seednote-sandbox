@@ -12,4 +12,11 @@ extension Date {
     func formattedShort() -> String {
         formatted(style: .short)
     }
+
+    func relativeFormatted() -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.locale = Locale(identifier: "ja_JP")
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: self, relativeTo: Date())
+    }
 }

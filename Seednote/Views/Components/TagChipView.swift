@@ -20,12 +20,12 @@ struct TagChipView: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
+        .padding(.horizontal, Spacing.badgePaddingH)
+        .padding(.vertical, Spacing.badgePaddingV)
         .background(Colors.surface)
         .overlay {
             Capsule()
-                .stroke(Colors.divider, lineWidth: 0.8)
+                .stroke(Colors.divider, lineWidth: Spacing.borderWidth)
         }
         .clipShape(Capsule())
     }

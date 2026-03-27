@@ -10,4 +10,9 @@ extension String {
     func tagsToCommaSeparated(_ tags: [String]) -> String {
         tags.joined(separator: ", ")
     }
+
+    func summarized(maxLength: Int = 50) -> String {
+        if count <= maxLength { return self }
+        return String(prefix(maxLength)) + "…"
+    }
 }

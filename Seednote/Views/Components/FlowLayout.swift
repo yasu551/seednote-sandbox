@@ -48,3 +48,12 @@ struct FlowLayout: Layout {
         }
     }
 }
+
+#Preview {
+    FlowLayout(spacing: Spacing.sm) {
+        ForEach(["発想", "朝", "UI", "SwiftUI", "デザイン", "思考整理"], id: \.self) { tag in
+            TagChipView(tag: tag)
+        }
+    }
+    .padding()
+}

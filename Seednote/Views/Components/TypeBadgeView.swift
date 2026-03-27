@@ -35,12 +35,12 @@ struct TypeBadgeView: View {
             Text(type.displayName)
                 .font(Typography.caption1)
                 .foregroundColor(badgeStyle.foreground)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
+                .padding(.horizontal, Spacing.badgePaddingH)
+                .padding(.vertical, Spacing.badgePaddingV)
                 .background(badgeStyle.background)
                 .overlay {
                     Capsule()
-                        .stroke(badgeStyle.background.opacity(0.9), lineWidth: 1)
+                        .stroke(badgeStyle.background.opacity(0.9), lineWidth: Spacing.borderWidth)
                 }
                 .clipShape(Capsule())
         }
