@@ -1,1 +1,9 @@
 build
+node_modules
+.pnpm-store
+.pnpm-home
+.corepack
+.cache
+.wrangler
+dist
+DerivedData

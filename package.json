@@ -1,0 +1,11 @@
+{
+  "name": "seednote-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "worker:dev": "pnpm --filter @seednote/ai-api dev",
+    "worker:test": "pnpm --filter @seednote/ai-api test",
+    "worker:typecheck": "pnpm --filter @seednote/ai-api typecheck",
+    "worker:check": "pnpm --filter @seednote/ai-api check"
+  }
+}

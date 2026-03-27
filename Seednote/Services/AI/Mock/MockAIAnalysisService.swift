@@ -24,10 +24,10 @@ class MockAIAnalysisService: AIAnalysisServiceProtocol {
             useCases: ["エッセイとして展開", "短編の題材に", "ブログ記事のネタに"]
         )
     }
-    
+
     func generateDraft(fragmentText: String, template: TemplateType) async throws -> DraftGenerationResponse {
         try await Task.sleep(nanoseconds: UInt64(0.8 * Double(NSEC_PER_SEC)))
-        
+
         let draftContent: String
         switch template {
         case .essayOutline:
@@ -86,7 +86,7 @@ class MockAIAnalysisService: AIAnalysisServiceProtocol {
             基本無料、AI機能数回は無料、以降はサブスク
             """
         }
-        
+
         return DraftGenerationResponse(content: draftContent)
     }
 

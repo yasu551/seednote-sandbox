@@ -1,0 +1,139 @@
+openapi: 3.1.0
+info:
+  title: Seednote AI API
+  version: 1.0.0
+  description: Seednote iOS app から利用する AI BFF。
+servers:
+  - url: https://seednote-ai-api.example.workers.dev
+paths:
+  /v1/analyze:
+    post:
+      summary: 断片を分析する
+      operationId: analyzeFragment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeRequest"
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyzeResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /v1/drafts:
+    post:
+      summary: 断片からドラフトを生成する
+      operationId: generateDraft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DraftRequest"
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DraftResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+components:
+  schemas:
+    AnalyzeRequest:
+      type: object
+      required: [fragmentText]
+      properties:
+        fragmentText:
+          type: string
+          minLength: 1
+    AnalyzeResponse:
+      type: object
+      required: [summary, type, question, claim, image, useCases]
+      properties:
+        summary:
+          type: string
+        type:
+          type: string
+          enum: [question, claim, idea, world, observation]
+        question:
+          type: string
+        claim:
+          type: string
+        image:
+          type: string
+        useCases:
+          type: array
+          items:
+            type: string
+    DraftRequest:
+      type: object
+      required: [fragmentText, template]
+      properties:
+        fragmentText:
+          type: string
+          minLength: 1
+        template:
+          type: string
+          enum: [essayOutline, shortStoryCore, appIdea]
+    DraftResponse:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+  responses:
+    BadRequest:
+      description: 不正な入力
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    Unauthorized:
+      description: 認証失敗
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    RateLimited:
+      description: レート制限
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+    InternalServerError:
+      description: 内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"

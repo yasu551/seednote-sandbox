@@ -492,6 +492,101 @@ struct SeednoteTests {
         #expect(response.useCases.count == 3)
     }
 
+    @Test func RemoteAIAnalysisServiceは分析レスポンスをドメインモデルへ変換する() async throws {
+        let configuration = APIConfiguration(
+            baseURL: URL(string: "https://example.com")!,
+            apiToken: "token",
+            useMockAI: false
+        )
+        let client = StubAIAPIClient(
+            data: """
+            {
+              "summary": "要約",
+              "type": "idea",
+              "question": "問い",
+              "claim": "主張",
+              "image": "📝",
+              "useCases": ["用途1", "用途2"]
+            }
+            """.data(using: .utf8)!,
+            response: HTTPURLResponse(
+                url: URL(string: "https://example.com/v1/analyze")!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: nil
+            )!
+        )
+        let service = RemoteAIAnalysisService(configuration: configuration, client: client)
+
+        let response = try await service.analyze(fragmentText: "断片")
+
+        #expect(response.summary == "要約")
+        #expect(response.type == .idea)
+        #expect(response.question == "問い")
+        #expect(response.claim == "主張")
+        #expect(response.image == "📝")
+        #expect(response.useCases == ["用途1", "用途2"])
+    }
+
+    @Test func RemoteAIAnalysisServiceはAPIエラーをUI向けエラーへ変換する() async {
+        let configuration = APIConfiguration(
+            baseURL: URL(string: "https://example.com")!,
+            apiToken: nil,
+            useMockAI: false
+        )
+        let client = StubAIAPIClient(
+            data: """
+            {
+              "error": {
+                "message": "rate limited"
+              }
+            }
+            """.data(using: .utf8)!,
+            response: HTTPURLResponse(
+                url: URL(string: "https://example.com/v1/analyze")!,
+                statusCode: 429,
+                httpVersion: nil,
+                headerFields: nil
+            )!
+        )
+        let service = RemoteAIAnalysisService(configuration: configuration, client: client)
+
+        do {
+            _ = try await service.analyze(fragmentText: "断片")
+            Issue.record("AIServiceError.httpError が投げられるべき")
+        } catch let error as AIServiceError {
+            guard case let .httpError(statusCode, message) = error else {
+                Issue.record("期待したエラー種別ではない: \(error)")
+                return
+            }
+
+            #expect(statusCode == 429)
+            #expect(message == "rate limited")
+            #expect(error.errorDescription == "AI APIエラー(429): rate limited")
+        } catch {
+            Issue.record("想定外のエラー: \(error)")
+        }
+    }
+
+    @MainActor
+    @Test func AppRouterは設定に応じてMockとRemoteを切り替える() {
+        let mockRouter = AppRouter(
+            configuration: APIConfiguration(baseURL: nil, apiToken: nil, useMockAI: true)
+        )
+        let remoteRouter = AppRouter(
+            configuration: APIConfiguration(
+                baseURL: URL(string: "https://example.com")!,
+                apiToken: nil,
+                useMockAI: false
+            )
+        )
+        let mockService = mockRouter.aiService as? AIAnalysisService
+        let remoteService = remoteRouter.aiService as? AIAnalysisService
+
+        #expect(mockService?.mode == .mock)
+        #expect(remoteService?.mode == .remote)
+    }
+
     @MainActor
     @Test func SwiftDataFragmentRepositoryは更新日時の降順で断片を取得できる() throws {
         let container = try makeInMemoryModelContainer()
@@ -728,6 +823,15 @@ private final class TrackingAIAnalysisService: AIAnalysisServiceProtocol {
     func generateDraft(fragmentText: String, template: TemplateType) async throws -> DraftGenerationResponse {
         generateDraftCallCount += 1
         return DraftGenerationResponse(content: "draft")
+    }
+}
+
+private struct StubAIAPIClient: AIAPIClient {
+    let data: Data
+    let response: HTTPURLResponse
+
+    func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+        (data, response)
     }
 }
 

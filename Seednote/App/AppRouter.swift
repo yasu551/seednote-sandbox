@@ -8,13 +8,15 @@ class AppRouter {
     }
 
     static let shared = AppRouter()
+
+    private let apiConfiguration: APIConfiguration
     
     lazy var repository: FragmentRepositoryProtocol = {
         return SwiftDataFragmentRepository(modelContext: modelContainer.mainContext)
     }()
     
     lazy var aiService: AIAnalysisServiceProtocol = {
-        return MockAIAnalysisService()
+        return AIAnalysisService(configuration: apiConfiguration)
     }()
     
     lazy var relatedService: RelatedFragmentServiceProtocol = {
@@ -31,7 +33,9 @@ class AppRouter {
     
     let modelContainer: ModelContainer
     
-    init() {
+    init(configuration: APIConfiguration = .current) {
+        self.apiConfiguration = configuration
+
         do {
             let config = ModelConfiguration(isStoredInMemoryOnly: false)
             modelContainer = try ModelContainer(

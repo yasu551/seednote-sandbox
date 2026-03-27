@@ -1,0 +1,34 @@
+name: Workers CI
+
+on:
+  pull_request:
+    paths:
+      - "backend/workers/ai-api/**"
+      - "backend/contracts/**"
+      - "package.json"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/workers-ci.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "backend/workers/ai-api/**"
+      - "backend/contracts/**"
+      - "package.json"
+      - "pnpm-workspace.yaml"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Worker check
+        run: pnpm worker:check
